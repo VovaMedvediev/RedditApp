@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/black_border">
+
+    <EditText
+        android:id="@+id/subredditNameEditText"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        android:hint="@string/type_a_feed_name"
+        android:textAlignment="center"
+        android:textSize="15sp"
+        app:layout_constraintHorizontal_weight="75"
+        app:layout_constraintEnd_toStartOf="@id/refreshPostsButton"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/refreshPostsButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/blue_rounded_button"
+        android:gravity="center"
+        android:text="@string/refresh"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintBottom_toBottomOf="@id/subredditNameEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="25"
+        app:layout_constraintStart_toEndOf="@id/subredditNameEditText"
+        app:layout_constraintTop_toTopOf="@+id/subredditNameEditText" />
+
+</android.support.constraint.ConstraintLayout>
