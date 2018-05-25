@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.example.vmedvediev.redditapp.model.Feed
 import com.example.vmedvediev.redditapp.model.Post
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.main_activity_part.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,10 +22,26 @@ class MainActivity : AppCompatActivity() {
         private const val BASE_URL = "https://www.reddit.com/r/"
     }
 
+    private lateinit var currentFeed: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+
+        refreshPostsButton.setOnClickListener {
+            val feedName = feedNameEditText.text.toString()
+            if (feedName == "") {
+                Toast.makeText(this@MainActivity, "Input a feed name!", Toast.LENGTH_SHORT).show()
+            } else {
+                currentFeed = feedName
+                init()
+            }
+        }
+    }
+
+    private fun init() {
         val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(SimpleXmlConverterFactory.create())

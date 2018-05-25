@@ -7,7 +7,7 @@
     android:background="@drawable/black_border">
 
     <EditText
-        android:id="@+id/subredditNameEditText"
+        android:id="@+id/feedNameEditText"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_gravity="bottom"
@@ -30,10 +30,10 @@
         android:gravity="center"
         android:text="@string/refresh"
         android:textColor="@color/colorWhite"
-        app:layout_constraintBottom_toBottomOf="@id/subredditNameEditText"
+        app:layout_constraintBottom_toBottomOf="@id/feedNameEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="25"
-        app:layout_constraintStart_toEndOf="@id/subredditNameEditText"
-        app:layout_constraintTop_toTopOf="@+id/subredditNameEditText" />
+        app:layout_constraintStart_toEndOf="@id/feedNameEditText"
+        app:layout_constraintTop_toTopOf="@+id/feedNameEditText" />
 
 </android.support.constraint.ConstraintLayout>
