@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 interface FeedAPI {
 
-    @GET("earthporn/.rss")
+    @GET("pics/.rss")
     fun getFeed(): Call<Feed>
 }

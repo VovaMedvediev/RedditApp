@@ -2,9 +2,12 @@ package com.example.vmedvediev.redditapp
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.widget.Toast
 import com.example.vmedvediev.redditapp.model.Feed
+import com.example.vmedvediev.redditapp.model.Post
+import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,30 +37,55 @@ class MainActivity : AppCompatActivity() {
         call.enqueue(object : Callback<Feed> {
 
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
-                Log.d(TAG, "onResponse: feed: " + response?.body()?.entrys)
+
+//                Log.d(TAG, "onResponse: feed: " + response?.body()?.toString())
                 Log.d(TAG, "onResponse: Server Response: " + response.toString())
 
                 val entrys = response?.body()?.entrys
-                Log.d(TAG, "onResponse: entrys: $entrys")
-//                Log.d(TAG, "onResponse: author: ${entrys?.get(0)?.author}")
-//                Log.d(TAG, "onResponse: updated: ${entrys?.get(0)?.updated}")
-//                Log.d(TAG, "onResponse: title: ${entrys?.get(0)?.title}")
 
-                for (item in entrys!!) {
-                    val extraclXml = ExtractXML("<a href=", entrys[0].content)
-                    val postContent: MutableList<String> = extraclXml.start()
+//                Log.d(TAG, "onResponse: author: ${entrys?.get(1)?.author?.name}")
+//                Log.d(TAG, "onResponse: updated: ${entrys?.get(1)?.updated}")
+//                Log.d(TAG, "onResponse: title: ${entrys?.get(1)?.title}")
 
-                    val extractXml2 = ExtractXML("<img src=", entrys[0].content)
+                val posts = ArrayList<Post>()
+                for (entry in entrys!!) {
+                    val extractXml1 = ExtractXML(entry.content, "<a href=")
+                    val postContent = extractXml1.parseHtml()
+
+                    val extractXml2 = ExtractXML(entry.content, "<img src=")
 
                     try {
-                        postContent.add(extractXml2.start()[0])
+                        postContent.add(extractXml2.parseHtml()[0])
                     } catch (e: NullPointerException) {
-                        postContent.add("")
-                        Log.e(TAG, "onResponse: NullPointerExceotion(thumbnail): ${e.message}")
+                        postContent.add("NULL")
+                        Log.e(TAG, "onResponse: NullPointerException(thumbnail): ${e.message}")
                     } catch (e: IndexOutOfBoundsException) {
-                        postContent.add("")
+                        postContent.add("NULL")
                         Log.e(TAG, "onResponse: IndexOutOfBoundsException(thumbnail): ${e.message}")
                     }
+
+                    val lastPosition = postContent.size - 1
+                    posts.add(Post(
+                            entry.title,
+                            entry.author?.name,
+                            entry.updated,
+                            postContent[0],
+                            postContent[lastPosition]
+                    ))
+                }
+
+//                for (post in posts) {
+//                    Log.d(TAG, "onResponse: \n" +
+//                            "PostUrl: ${post.postUrl} \n" +
+//                            "ThumbnailUrl: ${post.thumnailUrl} \n" +
+//                             "Title: ${post.title} \n" +
+//                              "Author: ${post.author} \n" +
+//                               "Updated: ${post.dateUpdated} \n")
+//                }
+
+                postsRecyclerView.apply {
+                    layoutManager = LinearLayoutManager(this@MainActivity)
+                    adapter = PostsRecyclerViewAdapter(context, posts)
                 }
             }
 
