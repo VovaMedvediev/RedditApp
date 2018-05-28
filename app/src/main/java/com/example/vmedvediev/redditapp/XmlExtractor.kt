@@ -18,10 +18,10 @@ class XmlExtractor constructor(val xml: String?, val tag: String) {
         xml?.let {
             if (endTag == "NONE") {
                 marker = "\""
-                splitXml = xml.split(tag + marker)
+                splitXml = it.split(tag + marker)
             } else {
                 marker = endTag
-                splitXml = xml.split(tag)
+                splitXml = it.split(tag)
             }
         }
 

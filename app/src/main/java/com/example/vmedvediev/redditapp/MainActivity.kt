@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        val call = getRetrofit().getFeed(currentFeed)
+        val call = initRetrofit().getFeed(currentFeed)
 
         call.enqueue(object : Callback<Feed> {
 
@@ -86,14 +86,12 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun getRetrofit() : FeedAPI {
+    private fun initRetrofit() : FeedAPI {
         val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build()
 
-        val feedApi = retrofit.create(FeedAPI::class.java)
-
-        return feedApi
+        return retrofit.create(FeedAPI::class.java)
     }
 }

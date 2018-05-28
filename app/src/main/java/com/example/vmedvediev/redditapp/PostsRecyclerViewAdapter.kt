@@ -88,6 +88,4 @@ class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Po
             }
         })
     }
-
-    fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View { return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot) }
 }
