@@ -9,6 +9,7 @@ import com.example.vmedvediev.redditapp.model.Feed
 import com.example.vmedvediev.redditapp.model.Post
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_activity_part.*
+import kotlinx.android.synthetic.main.main_activity_part.refreshPostsButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,8 +28,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
 
         refreshPostsButton.setOnClickListener {
             val feedName = feedNameEditText.text.toString()
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         val feedApi = retrofit.create(FeedAPI::class.java)
 
-        val call = feedApi.getFeed()
+        val call = feedApi.getFeed(currentFeed)
 
         call.enqueue(object : Callback<Feed> {
 
