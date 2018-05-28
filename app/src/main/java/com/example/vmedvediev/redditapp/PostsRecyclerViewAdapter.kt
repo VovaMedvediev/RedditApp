@@ -18,22 +18,16 @@ import com.nostra13.universalimageloader.core.assist.FailReason
 import com.nostra13.universalimageloader.core.assist.ImageScaleType
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
+import kotlinx.android.synthetic.main.item_post.view.*
 import org.jetbrains.anko.find
 
 class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Post>) : RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder>() {
-
-    companion object {
-        private const val TAG = "PostsRecyclerViewAdapter"
-    }
 
     init {
         setupImageLoader()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false)
-        return ViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(parent)
 
     override fun getItemCount(): Int = postsList.size
 
@@ -41,9 +35,35 @@ class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Po
         holder.title.text = postsList[position].title
         holder.author.text = postsList[position].author
         holder.dateUpdated.text = postsList[position].dateUpdated
+        showImage(holder, position)
+    }
 
+    inner class ViewHolder(parent: ViewGroup?) : RecyclerView.ViewHolder(parent?.inflate(R.layout.item_post)) {
+
+        val title: TextView = itemView.cardTitle
+        val author: TextView = itemView.cardAuthor
+        val dateUpdated: TextView = itemView.cardUpdated
+        val progressBar: ProgressBar = itemView.cardProgressBar
+        val thumbnailUrl: ImageView = itemView.cardImage
+    }
+
+    private fun setupImageLoader() {
+        val defaultOptions = DisplayImageOptions.Builder()
+                .cacheOnDisk(true).cacheInMemory(true)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .displayer(FadeInBitmapDisplayer(300)).build()
+
+        val config = ImageLoaderConfiguration.Builder(context)
+                .defaultDisplayImageOptions(defaultOptions)
+                .memoryCache(WeakMemoryCache())
+                .discCacheSize(100 * 1024 * 1024).build()
+
+        ImageLoader.getInstance().init(config)
+    }
+
+    private fun showImage(holder: ViewHolder, position: Int) {
         val imageLoader = ImageLoader.getInstance()
-        val defaultImage = context.resources.getIdentifier("@drawable/reddir_alien", null, context.packageName)
+        val defaultImage = context.resources.getIdentifier("@drawable/reddit_alien", null, context.packageName)
         val options = DisplayImageOptions.Builder().cacheInMemory(true)
                 .cacheOnDisk(true).resetViewBeforeLoading(true)
                 .showImageForEmptyUri(defaultImage)
@@ -66,38 +86,8 @@ class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Po
             override fun onLoadingFailed(imageUri: String?, view: View?, failReason: FailReason?) {
                 holder.progressBar.visibility = View.GONE
             }
-
         })
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        val title: TextView
-        val author: TextView
-        val dateUpdated: TextView
-        val progressBar: ProgressBar
-        val thumbnailUrl: ImageView
-
-        init {
-            title = view.find(R.id.cardTitle)
-            author = view.find(R.id.cardAuthor)
-            dateUpdated = view.find(R.id.cardUpdated)
-            progressBar = view.find(R.id.cardProgressBar)
-            thumbnailUrl = view.find(R.id.cardImage)
-        }
-    }
-
-    private fun setupImageLoader() {
-        val defaultOptions = DisplayImageOptions.Builder()
-                .cacheOnDisk(true).cacheInMemory(true)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .displayer(FadeInBitmapDisplayer(300)).build()
-
-        val config = ImageLoaderConfiguration.Builder(context)
-                .defaultDisplayImageOptions(defaultOptions)
-                .memoryCache(WeakMemoryCache())
-                .discCacheSize(100 * 1024 * 1024).build()
-
-        ImageLoader.getInstance().init(config)
-    }
+    fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View { return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot) }
 }

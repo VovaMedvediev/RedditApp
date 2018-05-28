@@ -6,8 +6,7 @@ import org.simpleframework.xml.Root
 import java.io.Serializable
 
 @Root(name = "feed", strict = false)
-data class Feed @JvmOverloads constructor(
-                @field:Element(name = "icon") var icon: String = "",
+data class Feed(@field:Element(name = "icon") var icon: String = "",
                 @field:Element(name = "id") var id: String = "",
                 @field:Element(name = "logo") var logo: String = "",
                 @field:Element(name = "title") var title: String = "",
@@ -21,8 +20,7 @@ data class Feed @JvmOverloads constructor(
 }
 
 @Root(name = "entry", strict = false)
-data class Entry @JvmOverloads constructor(
-                 @field:Element(name = "content") var content: String = "",
+data class Entry(@field:Element(name = "content") var content: String = "",
                  @field:Element(name = "author", required = false) var author: Author? = null,
                  @field:Element(name = "title") var title: String = "",
                  @field:Element(name = "updated") var updated: String = "",
