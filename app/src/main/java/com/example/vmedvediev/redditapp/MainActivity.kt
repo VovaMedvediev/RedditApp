@@ -3,6 +3,7 @@ package com.example.vmedvediev.redditapp
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
 import com.example.vmedvediev.redditapp.model.Feed
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         refreshPostsButton.setOnClickListener {
             val feedName = feedNameEditText.text.toString()
-            if (feedName == "") {
+            if (TextUtils.isEmpty(feedName)) {
                 Toast.makeText(this@MainActivity, "Input a feed name!", Toast.LENGTH_SHORT).show()
             } else {
                 currentFeed = feedName
@@ -41,40 +42,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        val retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(SimpleXmlConverterFactory.create())
-                .build()
-
-        val feedApi = retrofit.create(FeedAPI::class.java)
-
-        val call = feedApi.getFeed(currentFeed)
+        val call = initRetrofit().getFeed(currentFeed)
 
         call.enqueue(object : Callback<Feed> {
 
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
-
-//                Log.d(TAG, "onResponse: feed: " + response?.body()?.toString())
-                Log.d(TAG, "onResponse: Server Response: " + response.toString())
-
                 val entrys = response?.body()?.entrys
-
-//                Log.d(TAG, "onResponse: author: ${entrys?.get(1)?.author?.name}")
-//                Log.d(TAG, "onResponse: updated: ${entrys?.get(1)?.updated}")
-//                Log.d(TAG, "onResponse: title: ${entrys?.get(1)?.title}")
-
                 val posts = ArrayList<Post>()
-                for (entry in entrys!!) {
-                    val extractXml1 = ExtractXML(entry.content, "<a href=")
+
+                entrys?.forEach { entry ->
+                    val extractXml1 = XmlExtractor(entry.content, "<a href=")
                     val postContent = extractXml1.parseHtml()
 
-                    val extractXml2 = ExtractXML(entry.content, "<img src=")
+                    val extractXml2 = XmlExtractor(entry.content, "<img src=")
 
                     try {
                         postContent.add(extractXml2.parseHtml()[0])
-                    } catch (e: NullPointerException) {
-                        postContent.add("NULL")
-                        Log.e(TAG, "onResponse: NullPointerException(thumbnail): ${e.message}")
                     } catch (e: IndexOutOfBoundsException) {
                         postContent.add("NULL")
                         Log.e(TAG, "onResponse: IndexOutOfBoundsException(thumbnail): ${e.message}")
@@ -90,15 +73,6 @@ class MainActivity : AppCompatActivity() {
                     ))
                 }
 
-//                for (post in posts) {
-//                    Log.d(TAG, "onResponse: \n" +
-//                            "PostUrl: ${post.postUrl} \n" +
-//                            "ThumbnailUrl: ${post.thumnailUrl} \n" +
-//                             "Title: ${post.title} \n" +
-//                              "Author: ${post.author} \n" +
-//                               "Updated: ${post.dateUpdated} \n")
-//                }
-
                 postsRecyclerView.apply {
                     layoutManager = LinearLayoutManager(this@MainActivity)
                     adapter = PostsRecyclerViewAdapter(context, posts)
@@ -110,5 +84,14 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun initRetrofit() : FeedAPI {
+        val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .build()
+
+        return retrofit.create(FeedAPI::class.java)
     }
 }

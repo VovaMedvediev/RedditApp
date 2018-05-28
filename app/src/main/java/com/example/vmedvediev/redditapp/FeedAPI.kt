@@ -9,5 +9,4 @@ interface FeedAPI {
     
     @GET("{feedName}/.rss")
     fun getFeed(@Path("feedName") feedName: String): Call<Feed>
-
 }
