@@ -36,6 +36,29 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
                 Log.d(TAG, "onResponse: feed: " + response?.body()?.entrys)
                 Log.d(TAG, "onResponse: Server Response: " + response.toString())
+
+                val entrys = response?.body()?.entrys
+                Log.d(TAG, "onResponse: entrys: $entrys")
+//                Log.d(TAG, "onResponse: author: ${entrys?.get(0)?.author}")
+//                Log.d(TAG, "onResponse: updated: ${entrys?.get(0)?.updated}")
+//                Log.d(TAG, "onResponse: title: ${entrys?.get(0)?.title}")
+
+                for (item in entrys!!) {
+                    val extraclXml = ExtractXML("<a href=", entrys[0].content)
+                    val postContent: MutableList<String> = extraclXml.start()
+
+                    val extractXml2 = ExtractXML("<img src=", entrys[0].content)
+
+                    try {
+                        postContent.add(extractXml2.start()[0])
+                    } catch (e: NullPointerException) {
+                        postContent.add("")
+                        Log.e(TAG, "onResponse: NullPointerExceotion(thumbnail): ${e.message}")
+                    } catch (e: IndexOutOfBoundsException) {
+                        postContent.add("")
+                        Log.e(TAG, "onResponse: IndexOutOfBoundsException(thumbnail): ${e.message}")
+                    }
+                }
             }
 
             override fun onFailure(call: Call<Feed>?, t: Throwable?) {

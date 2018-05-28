@@ -16,7 +16,7 @@ data class Feed @JvmOverloads constructor(@field:Element(name = "icon") var icon
 
 @Root(name = "entry", strict = false)
 data class Entry @JvmOverloads constructor(@field:Element(name = "content") var content: String = "",
-                 @field:Element(name = "author", required = false) var author: String = "",
+                 @field:Element(name = "author", required = false) var author: Author? = null,
                  @field:Element(name = "title") var title: String = "",
                  @field:Element(name = "updated") var updated: String = "",
                  @field:Element(name = "id") var id: String = "") : Serializable
