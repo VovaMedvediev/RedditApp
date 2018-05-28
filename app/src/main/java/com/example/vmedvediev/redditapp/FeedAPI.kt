@@ -6,7 +6,8 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface FeedAPI {
-
+    
     @GET("{feedName}/.rss")
     fun getFeed(@Path("feedName") feedName: String): Call<Feed>
+
 }
