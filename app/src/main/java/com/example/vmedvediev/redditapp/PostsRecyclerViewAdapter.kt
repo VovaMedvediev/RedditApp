@@ -1,14 +1,16 @@
 package com.example.vmedvediev.redditapp
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Post
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache
 import com.nostra13.universalimageloader.core.DisplayImageOptions
@@ -19,7 +21,6 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 import kotlinx.android.synthetic.main.item_post.view.*
-import org.jetbrains.anko.find
 
 class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Post>) : RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder>() {
 
@@ -36,6 +37,16 @@ class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Po
         holder.author.text = postsList[position].author
         holder.dateUpdated.text = postsList[position].dateUpdated
         showImage(holder, position)
+        holder.container.setOnClickListener {
+            val intent = Intent(context, CommentsActivity::class.java).apply {
+                putExtra("@string/post_url", postsList[position].postUrl)
+                putExtra("@string/post_thumbnail", postsList[position].thumnailUrl)
+                putExtra("@string/post_title", postsList[position].title)
+                putExtra("@string/post_author", postsList[position].author)
+                putExtra("@string/post_updated", postsList[position].dateUpdated)
+            }
+            context.startActivity(intent)
+        }
     }
 
     inner class ViewHolder(parent: ViewGroup?) : RecyclerView.ViewHolder(parent?.inflate(R.layout.item_post)) {
@@ -45,6 +56,7 @@ class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Po
         val dateUpdated: TextView = itemView.cardUpdated
         val progressBar: ProgressBar = itemView.cardProgressBar
         val thumbnailUrl: ImageView = itemView.cardImage
+        val container: ConstraintLayout = itemView.container
     }
 
     private fun setupImageLoader() {

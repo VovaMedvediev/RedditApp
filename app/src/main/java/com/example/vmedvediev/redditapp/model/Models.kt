@@ -51,3 +51,5 @@ data class Author(@field:Element(name = "name") var name: String = "",
 }
 
 data class Post(val title: String, val author: String?, val dateUpdated: String, val postUrl: String, val thumnailUrl:String)
+
+data class Comment(val comment: String, val author: String?, val updated: String, val id: String)
