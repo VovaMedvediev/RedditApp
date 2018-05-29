@@ -22,7 +22,8 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 import kotlinx.android.synthetic.main.item_post.view.*
 
-class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Post>) : RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder>() {
+class PostsRecyclerViewAdapter(val context: Context, private val postsList: ArrayList<Post>,
+                               val onPostClickListener: (Post) -> Unit) : RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder>() {
 
     init {
         setupImageLoader()
@@ -37,15 +38,9 @@ class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Po
         holder.author.text = postsList[position].author
         holder.dateUpdated.text = postsList[position].dateUpdated
         showImage(holder, position)
-        holder.container.setOnClickListener {
-            val intent = Intent(context, CommentsActivity::class.java).apply {
-                putExtra("@string/post_url", postsList[position].postUrl)
-                putExtra("@string/post_thumbnail", postsList[position].thumnailUrl)
-                putExtra("@string/post_title", postsList[position].title)
-                putExtra("@string/post_author", postsList[position].author)
-                putExtra("@string/post_updated", postsList[position].dateUpdated)
-            }
-            context.startActivity(intent)
+
+        holder.itemView.setOnClickListener {
+            onPostClickListener(postsList[position])
         }
     }
 
@@ -56,7 +51,6 @@ class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Po
         val dateUpdated: TextView = itemView.cardUpdated
         val progressBar: ProgressBar = itemView.cardProgressBar
         val thumbnailUrl: ImageView = itemView.cardImage
-        val container: ConstraintLayout = itemView.container
     }
 
     private fun setupImageLoader() {
