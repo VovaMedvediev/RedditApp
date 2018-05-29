@@ -100,11 +100,11 @@ class MainActivity : AppCompatActivity() {
     private fun onPostClicked(post: Post) {
         Toast.makeText(this, "CLICKED! + ${post.title}", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, CommentsActivity::class.java).apply {
-            putExtra("@string/post_url", post.postUrl)
-            putExtra("@string/post_thumbnail", post.thumnailUrl)
-            putExtra("@string/post_title", post.title)
-            putExtra("@string/post_author", post.author)
-            putExtra("@string/post_updated", post.dateUpdated)
+            putExtra("postUrl", post.postUrl)
+            putExtra("postThumbnail", post.thumnailUrl)
+            putExtra("postTitle", post.title)
+            putExtra("postAuthor", post.author)
+            putExtra("postUpdated", post.dateUpdated)
         }
         startActivity(intent)
     }

@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".comments.CommentsActivity" />
+        <activity android:name=".WebViewActivity" />
     </application>
 
 </manifest>

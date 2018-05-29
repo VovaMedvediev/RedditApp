@@ -1,5 +1,6 @@
 package com.example.vmedvediev.redditapp.comments
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -11,8 +12,10 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import com.example.vmedvediev.redditapp.FeedAPI
 import com.example.vmedvediev.redditapp.R
+import com.example.vmedvediev.redditapp.WebViewActivity
 import com.example.vmedvediev.redditapp.XmlExtractor
 import com.example.vmedvediev.redditapp.model.Comment
+import com.example.vmedvediev.redditapp.model.Entry
 import com.example.vmedvediev.redditapp.model.Feed
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache
 import com.nostra13.universalimageloader.core.DisplayImageOptions
@@ -22,7 +25,6 @@ import com.nostra13.universalimageloader.core.assist.FailReason
 import com.nostra13.universalimageloader.core.assist.ImageScaleType
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.comments_activity_header.*
 import kotlinx.android.synthetic.main.comments_in_comments_activity.*
 import retrofit2.Call
@@ -59,35 +61,9 @@ class CommentsActivity : AppCompatActivity() {
         val call = initRetrofit().getFeed(currentFeed)
         call.enqueue(object : Callback<Feed> {
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
-                val entrys = response?.body()?.entrys
-                entrys?.forEach {
-                    val xmlExtractor = XmlExtractor(it.content,"<div class=\"md\"><p>","</p>")
-                    val commentDetails = xmlExtractor.parseHtml()
-
-                    try {
-                        commentsList.add(Comment(
-                                commentDetails[0],
-                                it.author?.name,
-                                it.updated,
-                                it.id
-                        ))
-                    } catch (e: IndexOutOfBoundsException) {
-                        commentsList.add(Comment(
-                                "Error reading comment",
-                                "None",
-                                "None",
-                                "None"
-                        ))
-                    }
-                }
-
-                commentsRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(this@CommentsActivity)
-                    adapter = CommentsRecyclerViewAdapter(this@CommentsActivity, commentsList)
-                }
-
-                commentsLoadingProgressBar.visibility = View.GONE
-                progressTextView.visibility = View.GONE
+                val esntries = response?.body()?.entrys
+                prepareCommentsFromEntries(esntries)
+                initRecycler()
             }
 
             override fun onFailure(call: Call<Feed>?, t: Throwable?) {
@@ -95,6 +71,39 @@ class CommentsActivity : AppCompatActivity() {
                 Toast.makeText(this@CommentsActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun prepareCommentsFromEntries(entries: List<Entry>?) {
+        entries?.forEach {
+            val xmlExtractor = XmlExtractor(it.content,"<div class=\"md\"><p>","</p>")
+            val commentDetails = xmlExtractor.parseHtml()
+
+            try {
+                commentsList.add(Comment(
+                        commentDetails[0],
+                        it.author?.name,
+                        it.updated,
+                        it.id
+                ))
+            } catch (e: IndexOutOfBoundsException) {
+                commentsList.add(Comment(
+                        "Error reading comment",
+                        "None",
+                        "None",
+                        "None"
+                ))
+            }
+        }
+    }
+
+    private fun initRecycler() {
+        commentsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(this@CommentsActivity)
+            adapter = CommentsRecyclerViewAdapter(this@CommentsActivity, commentsList)
+        }
+
+        commentsLoadingProgressBar?.visibility = View.GONE
+        progressTextView?.visibility = View.GONE
     }
 
     private fun initPost() {
@@ -106,9 +115,9 @@ class CommentsActivity : AppCompatActivity() {
             postUpdated = it.getStringExtra("@string/post_updated")
         }
 
-        postTitleTextView.text = postTitle
-        postAuthorTextView.text = postAuthor
-        postUpdatedTextView.text = postUpdated
+        postTitleTextView?.text = postTitle
+        postAuthorTextView?.text = postAuthor
+        postUpdatedTextView?.text = postUpdated
         showImage(postThumbnailUrl, postThumbnailImageView, postLoadingProgressBar)
 
         try {
@@ -116,6 +125,12 @@ class CommentsActivity : AppCompatActivity() {
             currentFeed = splittedUrl[1]
         } catch (e: ArrayIndexOutOfBoundsException) {
             Log.e(TAG, "initPost: ArrayIndexOutOfBoundsException: ${e.message}")
+        }
+
+        postThumbnailImageView.setOnClickListener {
+            val intent = Intent(this, WebViewActivity::class.java)
+            intent.putExtra("url", postUrl)
+            startActivity(intent)
         }
     }
 
@@ -130,19 +145,19 @@ class CommentsActivity : AppCompatActivity() {
 
         imageLoader.displayImage(imageUrl, imageView, options, object : ImageLoadingListener {
             override fun onLoadingComplete(imageUri: String?, view: View?, loadedImage: Bitmap?) {
-                progressBar.visibility = View.GONE
+                progressBar?.visibility = View.GONE
             }
 
             override fun onLoadingStarted(imageUri: String?, view: View?) {
-                progressBar.visibility = View.VISIBLE
+                progressBar?.visibility = View.VISIBLE
             }
 
             override fun onLoadingCancelled(imageUri: String?, view: View?) {
-                progressBar.visibility = View.GONE
+                progressBar?.visibility = View.GONE
             }
 
             override fun onLoadingFailed(imageUri: String?, view: View?, failReason: FailReason?) {
-                progressBar.visibility = View.GONE
+                progressBar?.visibility = View.GONE
             }
         })
     }
