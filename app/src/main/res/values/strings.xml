@@ -19,6 +19,7 @@
     <string name="post_author">post_author</string>
     <string name="post_updated">post_updated</string>
     <string name="post_id">post_id</string>
+    <string name="url">url</string>
     <string name="loading_webpage">Loading Webpage...</string>
     <string name="post_comment">post Comment</string>
     <string name="your_comment">Your Comment...</string>

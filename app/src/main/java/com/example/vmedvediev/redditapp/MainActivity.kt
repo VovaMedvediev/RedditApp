@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
+import com.example.vmedvediev.redditapp.R.string.post_url
 import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Feed
 import com.example.vmedvediev.redditapp.model.Post
@@ -98,13 +99,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onPostClicked(post: Post) {
-        Toast.makeText(this, "CLICKED! + ${post.title}", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, CommentsActivity::class.java).apply {
-            putExtra("postUrl", post.postUrl)
-            putExtra("postThumbnail", post.thumnailUrl)
-            putExtra("postTitle", post.title)
-            putExtra("postAuthor", post.author)
-            putExtra("postUpdated", post.dateUpdated)
+            putExtra(getString(R.string.post_url), post.postUrl)
+            putExtra(getString(R.string.post_thumbnail), post.thumnailUrl)
+            putExtra(getString(R.string.post_title), post.title)
+            putExtra(getString(R.string.post_author), post.author)
+            putExtra(getString(R.string.post_updated), post.dateUpdated)
         }
         startActivity(intent)
     }

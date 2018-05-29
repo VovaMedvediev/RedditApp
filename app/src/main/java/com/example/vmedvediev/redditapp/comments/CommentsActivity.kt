@@ -61,8 +61,8 @@ class CommentsActivity : AppCompatActivity() {
         val call = initRetrofit().getFeed(currentFeed)
         call.enqueue(object : Callback<Feed> {
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
-                val esntries = response?.body()?.entrys
-                prepareCommentsFromEntries(esntries)
+                val entries = response?.body()?.entrys
+                prepareCommentsFromEntries(entries)
                 initRecycler()
             }
 
@@ -97,7 +97,7 @@ class CommentsActivity : AppCompatActivity() {
     }
 
     private fun initRecycler() {
-        commentsRecyclerView.apply {
+        commentsRecyclerView?.apply {
             layoutManager = LinearLayoutManager(this@CommentsActivity)
             adapter = CommentsRecyclerViewAdapter(this@CommentsActivity, commentsList)
         }
@@ -108,11 +108,11 @@ class CommentsActivity : AppCompatActivity() {
 
     private fun initPost() {
         intent.let {
-            postUrl = it.getStringExtra("@string/post_url")
-            postThumbnailUrl = it.getStringExtra("@string/post_thumbnail")
-            postTitle = it.getStringExtra("@string/post_title")
-            postAuthor = it.getStringExtra("@string/post_author")
-            postUpdated = it.getStringExtra("@string/post_updated")
+            postUrl = it.getStringExtra(getString(R.string.post_url))
+            postThumbnailUrl = it.getStringExtra(getString(R.string.post_thumbnail))
+            postTitle = it.getStringExtra(getString(R.string.post_title))
+            postAuthor = it.getStringExtra(getString(R.string.post_author))
+            postUpdated = it.getStringExtra(getString(R.string.post_updated))
         }
 
         postTitleTextView?.text = postTitle
@@ -129,7 +129,7 @@ class CommentsActivity : AppCompatActivity() {
 
         postThumbnailImageView.setOnClickListener {
             val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra("url", postUrl)
+            intent.putExtra(getString(R.string.url), postUrl)
             startActivity(intent)
         }
     }
