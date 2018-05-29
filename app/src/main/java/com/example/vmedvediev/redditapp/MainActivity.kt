@@ -1,11 +1,14 @@
 package com.example.vmedvediev.redditapp
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
+import com.example.vmedvediev.redditapp.R.string.post_url
+import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Feed
 import com.example.vmedvediev.redditapp.model.Post
 import kotlinx.android.synthetic.main.activity_main.*
@@ -75,7 +78,7 @@ class MainActivity : AppCompatActivity() {
 
                 postsRecyclerView.apply {
                     layoutManager = LinearLayoutManager(this@MainActivity)
-                    adapter = PostsRecyclerViewAdapter(context, posts)
+                    adapter = PostsRecyclerViewAdapter(context, posts, {post: Post -> onPostClicked(post)})
                 }
             }
 
@@ -93,5 +96,16 @@ class MainActivity : AppCompatActivity() {
                 .build()
 
         return retrofit.create(FeedAPI::class.java)
+    }
+
+    private fun onPostClicked(post: Post) {
+        val intent = Intent(this, CommentsActivity::class.java).apply {
+            putExtra(getString(R.string.post_url), post.postUrl)
+            putExtra(getString(R.string.post_thumbnail), post.thumnailUrl)
+            putExtra(getString(R.string.post_title), post.title)
+            putExtra(getString(R.string.post_author), post.author)
+            putExtra(getString(R.string.post_updated), post.dateUpdated)
+        }
+        startActivity(intent)
     }
 }

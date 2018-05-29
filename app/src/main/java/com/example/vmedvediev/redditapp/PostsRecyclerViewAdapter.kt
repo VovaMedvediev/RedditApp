@@ -1,14 +1,16 @@
 package com.example.vmedvediev.redditapp
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Post
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache
 import com.nostra13.universalimageloader.core.DisplayImageOptions
@@ -19,9 +21,9 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 import kotlinx.android.synthetic.main.item_post.view.*
-import org.jetbrains.anko.find
 
-class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Post>) : RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder>() {
+class PostsRecyclerViewAdapter(val context: Context, private val postsList: ArrayList<Post>,
+                               val onPostClickListener: (Post) -> Unit) : RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder>() {
 
     init {
         setupImageLoader()
@@ -36,6 +38,10 @@ class PostsRecyclerViewAdapter(val context: Context, val postsList: ArrayList<Po
         holder.author.text = postsList[position].author
         holder.dateUpdated.text = postsList[position].dateUpdated
         showImage(holder, position)
+
+        holder.itemView.setOnClickListener {
+            onPostClickListener(postsList[position])
+        }
     }
 
     inner class ViewHolder(parent: ViewGroup?) : RecyclerView.ViewHolder(parent?.inflate(R.layout.item_post)) {
