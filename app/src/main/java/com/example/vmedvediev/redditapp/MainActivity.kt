@@ -6,7 +6,11 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
+import android.widget.Toolbar
+import com.example.vmedvediev.redditapp.Account.LoginActivity
 import com.example.vmedvediev.redditapp.R.string.post_url
 import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Feed
@@ -33,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setupToolbar()
+
         refreshPostsButton.setOnClickListener {
             val feedName = feedNameEditText.text.toString()
             if (TextUtils.isEmpty(feedName)) {
@@ -41,6 +47,25 @@ class MainActivity : AppCompatActivity() {
                 currentFeed = feedName
                 init()
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.navigation_menu, menu)
+        return true
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(mainToolBar)
+
+        mainToolBar.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.navigationLogin -> {
+                    val intent = Intent(this, LoginActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+            false
         }
     }
 
