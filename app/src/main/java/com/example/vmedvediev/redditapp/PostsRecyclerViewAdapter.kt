@@ -22,8 +22,8 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 import kotlinx.android.synthetic.main.item_post.view.*
 
-class PostsRecyclerViewAdapter(val context: Context, private val postsList: ArrayList<Post>,
-                               val onPostClickListener: (Post) -> Unit) : RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder>() {
+class PostsRecyclerViewAdapter(private val context: Context, private val postsList: ArrayList<Post>,
+                               private val onPostClickListener: (Post) -> Unit) : RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder>() {
 
     init {
         setupImageLoader()

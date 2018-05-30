@@ -1,5 +1,6 @@
 package com.example.vmedvediev.redditapp.comments
 
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -17,6 +18,7 @@ import com.example.vmedvediev.redditapp.XmlExtractor
 import com.example.vmedvediev.redditapp.model.Comment
 import com.example.vmedvediev.redditapp.model.Entry
 import com.example.vmedvediev.redditapp.model.Feed
+import com.example.vmedvediev.redditapp.model.Post
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
@@ -99,7 +101,7 @@ class CommentsActivity : AppCompatActivity() {
     private fun initRecycler() {
         commentsRecyclerView?.apply {
             layoutManager = LinearLayoutManager(this@CommentsActivity)
-            adapter = CommentsRecyclerViewAdapter(this@CommentsActivity, commentsList)
+            adapter = CommentsRecyclerViewAdapter(commentsList, {comment: Comment -> onCommentClicked(comment)})
         }
 
         commentsLoadingProgressBar?.visibility = View.GONE
@@ -127,11 +129,31 @@ class CommentsActivity : AppCompatActivity() {
             Log.e(TAG, "initPost: ArrayIndexOutOfBoundsException: ${e.message}")
         }
 
+        btnPostReply.setOnClickListener {
+            getUserComment()
+        }
+
         postThumbnailImageView.setOnClickListener {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(getString(R.string.url), postUrl)
             startActivity(intent)
         }
+    }
+
+    private fun getUserComment() {
+        val dialog = Dialog(this)
+
+        val width = (resources.displayMetrics.widthPixels * 0.95).toInt()
+        val height = (resources.displayMetrics.heightPixels * 0.6).toInt()
+
+        dialog?.apply {
+            title = "Dialog"
+            setContentView(R.layout.comment_input_layout)
+            window.setLayout(width, height)
+            show()
+        }
+
+
     }
 
     private fun showImage(imageUrl: String, imageView: ImageView, progressBar: ProgressBar) {
@@ -183,5 +205,9 @@ class CommentsActivity : AppCompatActivity() {
                 .build()
 
         return retrofit.create(FeedAPI::class.java)
+    }
+
+    private fun onCommentClicked(comment: Comment) {
+        getUserComment()
     }
 }
