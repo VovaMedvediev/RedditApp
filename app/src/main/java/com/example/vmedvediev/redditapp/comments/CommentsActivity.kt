@@ -1,5 +1,6 @@
 package com.example.vmedvediev.redditapp.comments
 
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -58,7 +59,10 @@ class CommentsActivity : AppCompatActivity() {
          setupToolbar()
          setupImageLoader()
          initPost()
-         init()
+         prepareCurrentFeed()
+         makeGetFeedRequest()
+         postReply()
+         openPostInWebview()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -80,8 +84,7 @@ class CommentsActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun init() {
+    private fun makeGetFeedRequest() {
         val call = initRetrofit().getFeed(currentFeed)
         call.enqueue(object : Callback<Feed> {
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
@@ -123,7 +126,7 @@ class CommentsActivity : AppCompatActivity() {
     private fun initRecycler() {
         commentsRecyclerView?.apply {
             layoutManager = LinearLayoutManager(this@CommentsActivity)
-            adapter = CommentsRecyclerViewAdapter(this@CommentsActivity, commentsList)
+            adapter = CommentsRecyclerViewAdapter(commentsList, {comment: Comment -> onCommentClicked(comment)})
         }
 
         commentsLoadingProgressBar?.visibility = View.GONE
@@ -143,18 +146,42 @@ class CommentsActivity : AppCompatActivity() {
         postAuthorTextView?.text = postAuthor
         postUpdatedTextView?.text = postUpdated
         showImage(postThumbnailUrl, postThumbnailImageView, postLoadingProgressBar)
+    }
 
+    private fun postReply() {
+        btnPostReply.setOnClickListener {
+            getUserComment()
+        }
+    }
+
+    private fun openPostInWebview() {
+        postThumbnailImageView.setOnClickListener {
+            val intent = Intent(this, WebViewActivity::class.java)
+            intent.putExtra(getString(R.string.url), postUrl)
+            startActivity(intent)
+        }
+    }
+
+    private fun prepareCurrentFeed() {
         try {
             val splittedUrl = postUrl.split(BASE_URL)
             currentFeed = splittedUrl[1]
         } catch (e: ArrayIndexOutOfBoundsException) {
             Log.e(TAG, "initPost: ArrayIndexOutOfBoundsException: ${e.message}")
         }
+    }
 
-        postThumbnailImageView.setOnClickListener {
-            val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra(getString(R.string.url), postUrl)
-            startActivity(intent)
+    private fun getUserComment() {
+        val dialog = Dialog(this)
+
+        val width = (resources.displayMetrics.widthPixels * 0.95).toInt()
+        val height = (resources.displayMetrics.heightPixels * 0.6).toInt()
+
+        dialog?.apply {
+            title = "Dialog"
+            setContentView(R.layout.comment_input_layout)
+            window.setLayout(width, height)
+            show()
         }
     }
 
@@ -207,5 +234,9 @@ class CommentsActivity : AppCompatActivity() {
                 .build()
 
         return retrofit.create(FeedAPI::class.java)
+    }
+
+    private fun onCommentClicked(comment: Comment) {
+        getUserComment()
     }
 }

@@ -5,13 +5,13 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import kotlinx.android.synthetic.main.webview_layout.*
+import kotlinx.android.synthetic.main.webview_activity.*
 
 class WebViewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.webview_layout)
+        setContentView(R.layout.webview_activity)
 
         val url =  intent.getStringExtra("url")
         webView.apply {
