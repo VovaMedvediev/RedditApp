@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.Menu
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.example.vmedvediev.redditapp.Account.LoginActivity
 import com.example.vmedvediev.redditapp.FeedAPI
 import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.WebViewActivity
@@ -25,6 +27,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason
 import com.nostra13.universalimageloader.core.assist.ImageScaleType
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.comments_activity_header.*
 import kotlinx.android.synthetic.main.comments_in_comments_activity.*
 import retrofit2.Call
@@ -52,10 +55,31 @@ class CommentsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
          setContentView(R.layout.activity_comments)
 
+         setupToolbar()
          setupImageLoader()
          initPost()
          init()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.navigation_menu, menu)
+        return true
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(mainToolBar)
+
+        mainToolBar.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.navigationLogin -> {
+                    val intent = Intent(this, LoginActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+            false
+        }
+    }
+
 
     private fun init() {
         val call = initRetrofit().getFeed(currentFeed)
