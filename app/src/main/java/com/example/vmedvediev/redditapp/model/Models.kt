@@ -1,5 +1,7 @@
 package com.example.vmedvediev.redditapp.model
 
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
@@ -53,3 +55,10 @@ data class Author(@field:Element(name = "name") var name: String = "",
 data class Post(val title: String, val author: String?, val dateUpdated: String, val postUrl: String, val thumnailUrl:String)
 
 data class Comment(val comment: String, val author: String?, val updated: String, val id: String)
+
+data class LoginChecker(@SerializedName("json") @Expose val json: Json)
+
+data class Json(@SerializedName("data") @Expose val data: Data)
+
+data class Data(@SerializedName("modhash") @Expose val modhash: String,
+                @SerializedName("cookie") @Expose val cookie: String)
