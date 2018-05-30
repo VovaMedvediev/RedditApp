@@ -65,9 +65,6 @@ class CommentsActivity : AppCompatActivity() {
          openPostInWebview()
     }
 
-
-    private fun makeGetFeedRequest() {
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.navigation_menu, menu)
         return true
@@ -87,8 +84,7 @@ class CommentsActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun init() {
+    private fun makeGetFeedRequest() {
         val call = initRetrofit().getFeed(currentFeed)
         call.enqueue(object : Callback<Feed> {
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
