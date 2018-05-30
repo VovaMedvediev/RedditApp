@@ -18,7 +18,6 @@ import com.example.vmedvediev.redditapp.XmlExtractor
 import com.example.vmedvediev.redditapp.model.Comment
 import com.example.vmedvediev.redditapp.model.Entry
 import com.example.vmedvediev.redditapp.model.Feed
-import com.example.vmedvediev.redditapp.model.Post
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
@@ -56,10 +55,13 @@ class CommentsActivity : AppCompatActivity() {
 
          setupImageLoader()
          initPost()
-         init()
+         prepareCurrentFeed()
+         makeRequest()
+         postReply()
+         openPostInWebview()
     }
 
-    private fun init() {
+    private fun makeRequest() {
         val call = initRetrofit().getFeed(currentFeed)
         call.enqueue(object : Callback<Feed> {
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
@@ -121,22 +123,28 @@ class CommentsActivity : AppCompatActivity() {
         postAuthorTextView?.text = postAuthor
         postUpdatedTextView?.text = postUpdated
         showImage(postThumbnailUrl, postThumbnailImageView, postLoadingProgressBar)
+    }
 
+    private fun postReply() {
+        btnPostReply.setOnClickListener {
+            getUserComment()
+        }
+    }
+
+    private fun openPostInWebview() {
+        postThumbnailImageView.setOnClickListener {
+            val intent = Intent(this, WebViewActivity::class.java)
+            intent.putExtra(getString(R.string.url), postUrl)
+            startActivity(intent)
+        }
+    }
+
+    private fun prepareCurrentFeed() {
         try {
             val splittedUrl = postUrl.split(BASE_URL)
             currentFeed = splittedUrl[1]
         } catch (e: ArrayIndexOutOfBoundsException) {
             Log.e(TAG, "initPost: ArrayIndexOutOfBoundsException: ${e.message}")
-        }
-
-        btnPostReply.setOnClickListener {
-            getUserComment()
-        }
-
-        postThumbnailImageView.setOnClickListener {
-            val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra(getString(R.string.url), postUrl)
-            startActivity(intent)
         }
     }
 
@@ -152,8 +160,6 @@ class CommentsActivity : AppCompatActivity() {
             window.setLayout(width, height)
             show()
         }
-
-
     }
 
     private fun showImage(imageUrl: String, imageView: ImageView, progressBar: ProgressBar) {
