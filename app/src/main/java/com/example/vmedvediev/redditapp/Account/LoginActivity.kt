@@ -22,6 +22,8 @@ class LoginActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "CommentsActivity"
         private const val BASE_URL = "https://www.reddit.com/api/makeLoginRequest/"
+        private const val API_TYPE = "json"
+        private const val CONTENT_TYPE = "application/json"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,26 +45,19 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun makeLoginRequest(username: String, password: String) {
-        val apiType = "json"
         val headerMap = HashMap<String, String>()
-        headerMap["Content-Type"] = "application/json"
+        headerMap["Content-Type"] = CONTENT_TYPE
 
-        val call = initRetrofit().signIn(headerMap, username, username, password, apiType)
+        val call = initRetrofit().signIn(headerMap, username, username, password, API_TYPE)
         call.enqueue(object : Callback<LoginChecker> {
             override fun onResponse(call: Call<LoginChecker>?, response: Response<LoginChecker>?) {
                 Log.d(TAG, "onResponse: Server Response: ${response.toString()}")
 
-                val modhash = response?.body()?.json?.data?.modhash
-                val cookie = response?.body()?.json?.data?.cookie
+                val data = response?.body()?.json?.data
+                val modhash = data?.modhash
+                val cookie = data?.cookie
 
-                if (!TextUtils.isEmpty(modhash)) {
-                    setSessionParams(username, modhash, cookie)
-                    loginRequestLoadingProgressBar?.visibility = View.GONE
-                    Toast.makeText(this@LoginActivity, "Login Successful!", Toast.LENGTH_SHORT).show()
-
-                    // Navigate back to previous activity
-                    finish()
-                }
+                handeSuccessfullLogin(modhash, username, cookie)
             }
 
             override fun onFailure(call: Call<LoginChecker>?, t: Throwable?) {
@@ -71,6 +66,17 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this@LoginActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun handeSuccessfullLogin(modhash: String?, username: String, cookie: String?) {
+        if (!TextUtils.isEmpty(modhash)) {
+            setSessionParams(username, modhash, cookie)
+            loginRequestLoadingProgressBar?.visibility = View.GONE
+            Toast.makeText(this@LoginActivity, "Login Successful!", Toast.LENGTH_SHORT).show()
+
+            // Navigate back to previous activity
+            finish()
+        }
     }
 
     private fun initRetrofit() : FeedAPI {

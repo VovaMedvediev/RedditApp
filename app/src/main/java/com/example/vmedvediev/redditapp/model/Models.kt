@@ -56,9 +56,9 @@ data class Post(val title: String, val author: String?, val dateUpdated: String,
 
 data class Comment(val comment: String, val author: String?, val updated: String, val id: String)
 
-data class LoginChecker(@SerializedName("json") @Expose val json: Json)
+data class LoginChecker(@SerializedName("json") val json: Json)
 
-data class Json(@SerializedName("data") @Expose val data: Data)
+data class Json(@SerializedName("data") val data: Data)
 
-data class Data(@SerializedName("modhash") @Expose val modhash: String,
-                @SerializedName("cookie") @Expose val cookie: String)
+data class Data(@SerializedName("modhash") val modhash: String,
+                @SerializedName("cookie") val cookie: String)
