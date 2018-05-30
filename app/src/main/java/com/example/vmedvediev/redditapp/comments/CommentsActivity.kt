@@ -56,12 +56,12 @@ class CommentsActivity : AppCompatActivity() {
          setupImageLoader()
          initPost()
          prepareCurrentFeed()
-         makeRequest()
+         makeGetFeedRequest()
          postReply()
          openPostInWebview()
     }
 
-    private fun makeRequest() {
+    private fun makeGetFeedRequest() {
         val call = initRetrofit().getFeed(currentFeed)
         call.enqueue(object : Callback<Feed> {
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
