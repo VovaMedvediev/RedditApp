@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">RedditApp</string>
+    <string name="item_matrix">1000</string>
+    <string name="start_edit_text_hint">Input size of square matrix(1 to 1000)</string>
+    <string name="go_button_text">Go</string>
+    <string name="error_message">Possible size of matrix 1 to 1000</string>
+    <string name="card_title">Card Title</string>
+    <string name="author">Author</string>
+    <string name="updated">Updated</string>
+    <string name="refresh">Refresh</string>
+    <string name="type_a_feed_name">Type a Feed Name</string>
+    <string name="reply">reply</string>
+    <string name="comment">comment</string>
+    <string name="last_updated">Last Updated</string>
+    <string name="lodaing_comments">Lodaing Comments...</string>
+    <string name="post_url">post_url</string>
+    <string name="post_thumbnail">post_thumbnail</string>
+    <string name="post_title">post_title</string>
+    <string name="post_author">post_author</string>
+    <string name="post_updated">post_updated</string>
+    <string name="post_id">post_id</string>
+    <string name="url">url</string>
+    <string name="loading_webpage">Loading Webpage...</string>
+    <string name="post_comment">post Comment</string>
+    <string name="your_comment">Your Comment...</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="SessionUsername">com.example.redditapp.Account.SessionUsername</string>
+    <string name="SessionModhash">com.example.redditapp.Account.SessionModhash</string>
+    <string name="SessionCookie">com.example.redditapp.Account.SessionCookie</string>
 </resources>
