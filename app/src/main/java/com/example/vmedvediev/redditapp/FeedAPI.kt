@@ -1,5 +1,6 @@
 package com.example.vmedvediev.redditapp
 
+import com.example.vmedvediev.redditapp.model.CommentChecker
 import com.example.vmedvediev.redditapp.model.Feed
 import com.example.vmedvediev.redditapp.model.LoginChecker
 import retrofit2.Call
@@ -16,4 +17,11 @@ interface FeedAPI {
                @Query("user") user: String,
                @Query("passwd") password: String,
                @Query("api_type") type: String) : Call<LoginChecker>
+
+    @POST("{comment}")
+    fun submitComment(@HeaderMap headers: Map<String, String>,
+               @Path("comment") comment: String,
+               @Query("parent") parent: String,
+               @Query("amp;text") text: String) : Call<CommentChecker>
+
 }

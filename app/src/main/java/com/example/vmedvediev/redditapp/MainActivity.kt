@@ -97,7 +97,8 @@ class MainActivity : AppCompatActivity() {
                             entry.author?.name,
                             entry.updated,
                             postContent[0],
-                            postContent[lastPosition]
+                            postContent[lastPosition],
+                            entry.id
                     ))
                 }
 
@@ -130,6 +131,7 @@ class MainActivity : AppCompatActivity() {
             putExtra(getString(R.string.post_title), post.title)
             putExtra(getString(R.string.post_author), post.author)
             putExtra(getString(R.string.post_updated), post.dateUpdated)
+            putExtra(getString(R.string.post_id), post.id)
         }
         startActivity(intent)
     }

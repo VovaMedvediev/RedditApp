@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
@@ -18,6 +19,7 @@ import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.WebViewActivity
 import com.example.vmedvediev.redditapp.XmlExtractor
 import com.example.vmedvediev.redditapp.model.Comment
+import com.example.vmedvediev.redditapp.model.CommentChecker
 import com.example.vmedvediev.redditapp.model.Entry
 import com.example.vmedvediev.redditapp.model.Feed
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache
@@ -29,12 +31,14 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.comment_input_layout.*
 import kotlinx.android.synthetic.main.comments_activity_header.*
 import kotlinx.android.synthetic.main.comments_in_comments_activity.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
 class CommentsActivity : AppCompatActivity() {
@@ -42,8 +46,10 @@ class CommentsActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "CommentsActivity"
         private const val BASE_URL = "https://www.reddit.com/r/"
+        private const val COMMENT_URL = "https://www.reddit.com/api/"
     }
 
+    private lateinit var postId: String
     private lateinit var postUrl: String
     private lateinit var postThumbnailUrl: String
     private lateinit var postTitle: String
@@ -51,18 +57,27 @@ class CommentsActivity : AppCompatActivity() {
     private lateinit var postUpdated: String
     private lateinit var currentFeed: String
     private val commentsList = ArrayList<Comment>()
+    private lateinit var modhash: String
+    private lateinit var cookie: String
+    private lateinit var username: String
 
      override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
          setContentView(R.layout.activity_comments)
 
          setupToolbar()
+         getSessionParams()
          setupImageLoader()
          initPost()
          prepareCurrentFeed()
          makeGetFeedRequest()
          postReply()
          openPostInWebview()
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+        getSessionParams()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -140,6 +155,7 @@ class CommentsActivity : AppCompatActivity() {
             postTitle = it.getStringExtra(getString(R.string.post_title))
             postAuthor = it.getStringExtra(getString(R.string.post_author))
             postUpdated = it.getStringExtra(getString(R.string.post_updated))
+            postId = it.getStringExtra(getString(R.string.post_id))
         }
 
         postTitleTextView?.text = postTitle
@@ -149,7 +165,7 @@ class CommentsActivity : AppCompatActivity() {
     }
 
     private fun postReply() {
-        btnPostReply.setOnClickListener {
+        postReplyButton.setOnClickListener {
             getUserComment()
         }
     }
@@ -182,7 +198,47 @@ class CommentsActivity : AppCompatActivity() {
             setContentView(R.layout.comment_input_layout)
             window.setLayout(width, height)
             show()
+
+            postCommentButton.setOnClickListener {
+                val comment = commentEditText?.text.toString()
+                makePostCommentRequest(comment)
+            }
         }
+    }
+
+    private fun makePostCommentRequest(comment: String) {
+            val headerMap = HashMap<String, String>()
+            headerMap["User-Agent"] = username
+            headerMap["X-Modhash"] = modhash
+            headerMap["cookie"] = "reddit_session=$cookie"
+
+            Log.e(TAG, "POST IDDDDDDDDDDDDDDDDDDDD: $postId + HEADER MAP: ${headerMap.toString()} + COMMENT : $comment")
+            val call = initRetrofitForComment().submitComment(headerMap, "comment", postId, comment)
+            call.enqueue(object : Callback<CommentChecker> {
+                override fun onResponse(call: Call<CommentChecker>?, response: Response<CommentChecker>?) {
+                    Log.e(TAG, "onResponse: SERVER RESPONSE: ${response.toString()}")
+                    val success = response?.body()?.success
+
+                    if (success == "true") {
+                        handleSuccessPostComment()
+                    } else {
+                        handleUnsuccessPostComment()
+                    }
+                }
+
+                override fun onFailure(call: Call<CommentChecker>?, t: Throwable?) {
+                    Log.e(CommentsActivity.TAG, "onFailure: Unable to post comment: ${t?.message}")
+                    Toast.makeText(this@CommentsActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun handleSuccessPostComment() {
+        Toast.makeText(this, "Post successful!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun handleUnsuccessPostComment() {
+        Toast.makeText(this, "Error occured! Dud you sign in?", Toast.LENGTH_SHORT).show()
     }
 
     private fun showImage(imageUrl: String, imageView: ImageView, progressBar: ProgressBar) {
@@ -236,7 +292,26 @@ class CommentsActivity : AppCompatActivity() {
         return retrofit.create(FeedAPI::class.java)
     }
 
+    private fun initRetrofitForComment() : FeedAPI {
+        val retrofit = Retrofit.Builder()
+                .baseUrl(COMMENT_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+        return retrofit.create(FeedAPI::class.java)
+    }
+
     private fun onCommentClicked(comment: Comment) {
         getUserComment()
     }
+
+     private fun getSessionParams() {
+         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+         preferences.let {
+             username = it.getString(getString(R.string.SessionUsername), "")
+             modhash = it.getString(getString(R.string.SessionModhash), "")
+             cookie = it.getString(getString(R.string.SessionCookie), "")
+         }
+         Log.e(TAG, "AAAAAAAAAAA: $username $modhash $cookie")
+     }
 }

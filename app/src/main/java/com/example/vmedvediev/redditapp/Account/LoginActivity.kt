@@ -21,7 +21,7 @@ class LoginActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "CommentsActivity"
-        private const val BASE_URL = "https://www.reddit.com/api/makeLoginRequest/"
+        private const val BASE_URL = "https://www.reddit.com/api/login/"
         private const val API_TYPE = "json"
         private const val CONTENT_TYPE = "application/json"
     }
@@ -39,12 +39,13 @@ class LoginActivity : AppCompatActivity() {
             if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
                 loginRequestLoadingProgressBar?.visibility = View.VISIBLE
 
-                makeLoginRequest(username, password)
+                login(username, password)
             }
         }
     }
 
-    private fun makeLoginRequest(username: String, password: String) {
+    //This function should be named "login" because its name used in the request.
+    private fun login(username: String, password: String) {
         val headerMap = HashMap<String, String>()
         headerMap["Content-Type"] = CONTENT_TYPE
 
@@ -57,18 +58,20 @@ class LoginActivity : AppCompatActivity() {
                 val modhash = data?.modhash
                 val cookie = data?.cookie
 
-                handeSuccessfullLogin(modhash, username, cookie)
+                Log.d(TAG, "$modhash $cookie")
+
+                handleSuccessfullLogin(modhash, username, cookie)
             }
 
             override fun onFailure(call: Call<LoginChecker>?, t: Throwable?) {
                 loginRequestLoadingProgressBar?.visibility = View.GONE
-                Log.e(LoginActivity.TAG, "onFailure: Unable to makeLoginRequest: ${t?.message}")
+                Log.e(LoginActivity.TAG, "onFailure: Unable to login: ${t?.message}")
                 Toast.makeText(this@LoginActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    private fun handeSuccessfullLogin(modhash: String?, username: String, cookie: String?) {
+    private fun handleSuccessfullLogin(modhash: String?, username: String, cookie: String?) {
         if (!TextUtils.isEmpty(modhash)) {
             setSessionParams(username, modhash, cookie)
             loginRequestLoadingProgressBar?.visibility = View.GONE

@@ -52,7 +52,7 @@ data class Author(@field:Element(name = "name") var name: String = "",
     }
 }
 
-data class Post(val title: String, val author: String?, val dateUpdated: String, val postUrl: String, val thumnailUrl:String)
+data class Post(val title: String, val author: String?, val dateUpdated: String, val postUrl: String, val thumnailUrl: String, val id: String)
 
 data class Comment(val comment: String, val author: String?, val updated: String, val id: String)
 
@@ -62,3 +62,5 @@ data class Json(@SerializedName("data") val data: Data)
 
 data class Data(@SerializedName("modhash") val modhash: String,
                 @SerializedName("cookie") val cookie: String)
+
+data class CommentChecker(@SerializedName("success") val success: String)
