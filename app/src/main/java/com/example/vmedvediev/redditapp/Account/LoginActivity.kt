@@ -8,13 +8,14 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.example.vmedvediev.redditapp.NetworkManager.API_TYPE
-import com.example.vmedvediev.redditapp.NetworkManager.initGsonRetrofit
+import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.model.LoginChecker
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.converter.gson.GsonConverterFactory
 
 class LoginActivity : AppCompatActivity() {
 
@@ -42,18 +43,18 @@ class LoginActivity : AppCompatActivity() {
 
     //This function should be named "login" because its name used in the request.
     private fun login(username: String, password: String) {
-        val call = initGsonRetrofit().signIn(username, username, password, API_TYPE)
+        val call = initRetrofit(GsonConverterFactory.create()).signIn(username, username, password, API_TYPE)
         call.enqueue(object : Callback<LoginChecker> {
             override fun onResponse(call: Call<LoginChecker>?, response: Response<LoginChecker>?) {
                 Log.d(TAG, "onResponse: Server Response: ${response.toString()}")
 
-                val data = response?.body()?.json?.data
-                val modhash = data?.modhash
-                val cookie = data?.cookie
+                response?.body()?.json?.data?.let {
+                    val (modhash, cookie) = it
 
-                Log.d(TAG, "$modhash $cookie")
+                    Log.d(TAG, "$modhash $cookie")
 
-                handleSuccessfullLogin(modhash, username, cookie)
+                    handleSuccessfullLogin(modhash, username, cookie)
+                }
             }
 
             override fun onFailure(call: Call<LoginChecker>?, t: Throwable?) {

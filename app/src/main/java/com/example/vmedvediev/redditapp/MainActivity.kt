@@ -12,7 +12,7 @@ import android.widget.Toast
 import android.widget.Toolbar
 import com.example.vmedvediev.redditapp.Account.LoginActivity
 import com.example.vmedvediev.redditapp.NetworkManager.BASE_URL
-import com.example.vmedvediev.redditapp.NetworkManager.initXmlRetrofit
+import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.R.string.post_url
 import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Feed
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        val call = initXmlRetrofit().getFeed(currentFeed)
+        val call = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed)
 
         call.enqueue(object : Callback<Feed> {
 

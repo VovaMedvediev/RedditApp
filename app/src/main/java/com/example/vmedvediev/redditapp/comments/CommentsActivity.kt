@@ -2,7 +2,6 @@ package com.example.vmedvediev.redditapp.comments
 
 import android.app.Dialog
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
@@ -10,16 +9,12 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Toast
 import com.example.vmedvediev.redditapp.Account.LoginActivity
-import com.example.vmedvediev.redditapp.FeedAPI
 import com.example.vmedvediev.redditapp.ImageLoaderManager.setupImageLoader
 import com.example.vmedvediev.redditapp.ImageLoaderManager.showImage
 import com.example.vmedvediev.redditapp.NetworkManager.BASE_URL
-import com.example.vmedvediev.redditapp.NetworkManager.initGsonRetrofit
-import com.example.vmedvediev.redditapp.NetworkManager.initXmlRetrofit
+import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.WebViewActivity
 import com.example.vmedvediev.redditapp.XmlExtractor
@@ -27,14 +22,6 @@ import com.example.vmedvediev.redditapp.model.Comment
 import com.example.vmedvediev.redditapp.model.CommentChecker
 import com.example.vmedvediev.redditapp.model.Entry
 import com.example.vmedvediev.redditapp.model.Feed
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache
-import com.nostra13.universalimageloader.core.DisplayImageOptions
-import com.nostra13.universalimageloader.core.ImageLoader
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
-import com.nostra13.universalimageloader.core.assist.FailReason
-import com.nostra13.universalimageloader.core.assist.ImageScaleType
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.comment_input_layout.*
 import kotlinx.android.synthetic.main.comments_activity_header.*
@@ -42,7 +29,6 @@ import kotlinx.android.synthetic.main.comments_in_comments_activity.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
@@ -99,7 +85,7 @@ class CommentsActivity : AppCompatActivity() {
     }
 
     private fun makeGetFeedRequest() {
-        val call = initXmlRetrofit().getFeed(currentFeed)
+        val call = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed)
         call.enqueue(object : Callback<Feed> {
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
                 val entries = response?.body()?.entrys
@@ -148,23 +134,14 @@ class CommentsActivity : AppCompatActivity() {
     }
 
     private fun initPost() {
-        lateinit var postThumbnailUrl: String
-        lateinit var postTitle: String
-        lateinit var postAuthor: String
-        lateinit var postUpdated: String
         intent.let {
             postUrl = it.getStringExtra(getString(R.string.post_url))
-            postThumbnailUrl = it.getStringExtra(getString(R.string.post_thumbnail))
-            postTitle = it.getStringExtra(getString(R.string.post_title))
-            postAuthor = it.getStringExtra(getString(R.string.post_author))
-            postUpdated = it.getStringExtra(getString(R.string.post_updated))
             postId = it.getStringExtra(getString(R.string.post_id))
+            postTitleTextView?.text = it.getStringExtra(getString(R.string.post_title))
+            postAuthorTextView?.text = it.getStringExtra(getString(R.string.post_author))
+            postUpdatedTextView?.text = it.getStringExtra(getString(R.string.post_updated))
+            showImage(this, it.getStringExtra(getString(R.string.post_thumbnail)), postThumbnailImageView, postLoadingProgressBar)
         }
-
-        postTitleTextView?.text = postTitle
-        postAuthorTextView?.text = postAuthor
-        postUpdatedTextView?.text = postUpdated
-        showImage(this ,postThumbnailUrl, postThumbnailImageView, postLoadingProgressBar)
     }
 
     private fun postReply() {
@@ -183,7 +160,7 @@ class CommentsActivity : AppCompatActivity() {
 
     private fun prepareCurrentFeed() {
         try {
-            val splittedUrl = postUrl.split(BASE_URL + "r/")
+            val splittedUrl = postUrl.split((BASE_URL + "r/").toRegex())
             currentFeed = splittedUrl[1]
         } catch (e: ArrayIndexOutOfBoundsException) {
             Log.e(TAG, "initPost: ArrayIndexOutOfBoundsException: ${e.message}")
@@ -196,7 +173,7 @@ class CommentsActivity : AppCompatActivity() {
         val width = (resources.displayMetrics.widthPixels * 0.95).toInt()
         val height = (resources.displayMetrics.heightPixels * 0.6).toInt()
 
-        dialog?.apply {
+        dialog.apply {
             title = "Dialog"
             setContentView(R.layout.comment_input_layout)
             window.setLayout(width, height)
@@ -214,8 +191,8 @@ class CommentsActivity : AppCompatActivity() {
             headerMap["User-Agent"] = username
             headerMap["X-Modhash"] = modhash
             headerMap["cookie"] = "reddit_session=$cookie"
-
-            val call = initGsonRetrofit().submitComment(headerMap, "comment", postId, comment)
+        
+            val call = initRetrofit(GsonConverterFactory.create()).submitComment(headerMap, "comment", postId, comment)
             call.enqueue(object : Callback<CommentChecker> {
                 override fun onResponse(call: Call<CommentChecker>?, response: Response<CommentChecker>?) {
                     Log.e(TAG, "onResponse: SERVER RESPONSE: ${response.toString()}")
