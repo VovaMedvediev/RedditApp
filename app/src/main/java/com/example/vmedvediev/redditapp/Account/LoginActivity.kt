@@ -7,23 +7,19 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.example.vmedvediev.redditapp.FeedAPI
+import com.example.vmedvediev.redditapp.NetworkManager.API_TYPE
+import com.example.vmedvediev.redditapp.NetworkManager.initGsonRetrofit
 import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.model.LoginChecker
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class LoginActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "CommentsActivity"
-        private const val BASE_URL = "https://www.reddit.com/api/login/"
-        private const val API_TYPE = "json"
-        private const val CONTENT_TYPE = "application/json"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,10 +42,7 @@ class LoginActivity : AppCompatActivity() {
 
     //This function should be named "login" because its name used in the request.
     private fun login(username: String, password: String) {
-        val headerMap = HashMap<String, String>()
-        headerMap["Content-Type"] = CONTENT_TYPE
-
-        val call = initRetrofit().signIn(headerMap, username, username, password, API_TYPE)
+        val call = initGsonRetrofit().signIn(username, username, password, API_TYPE)
         call.enqueue(object : Callback<LoginChecker> {
             override fun onResponse(call: Call<LoginChecker>?, response: Response<LoginChecker>?) {
                 Log.d(TAG, "onResponse: Server Response: ${response.toString()}")
@@ -80,15 +73,6 @@ class LoginActivity : AppCompatActivity() {
             // Navigate back to previous activity
             finish()
         }
-    }
-
-    private fun initRetrofit() : FeedAPI {
-        val retrofit = Retrofit.Builder()
-                .baseUrl(LoginActivity.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-        return retrofit.create(FeedAPI::class.java)
     }
 
     private fun setSessionParams(username: String, modhash: String?, cookie: String?) {

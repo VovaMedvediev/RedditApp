@@ -8,17 +8,18 @@ import retrofit2.http.*
 
 interface FeedAPI {
     
-    @GET("{feedName}/.rss")
+    @GET("r/{feedName}/.rss")
     fun getFeed(@Path("feedName") feedName: String) : Call<Feed>
 
-    @POST("{user}")
-    fun signIn(@HeaderMap headers: Map<String, String>,
+    @POST("api/login/{user}")
+    @Headers("Content-Type: application/json")
+    fun signIn(
                @Path("user") username: String,
                @Query("user") user: String,
                @Query("passwd") password: String,
                @Query("api_type") type: String) : Call<LoginChecker>
 
-    @POST("{comment}")
+    @POST("api/{comment}")
     fun submitComment(@HeaderMap headers: Map<String, String>,
                @Path("comment") comment: String,
                @Query("parent") parent: String,

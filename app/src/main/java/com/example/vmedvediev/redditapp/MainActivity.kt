@@ -11,6 +11,8 @@ import android.view.MenuItem
 import android.widget.Toast
 import android.widget.Toolbar
 import com.example.vmedvediev.redditapp.Account.LoginActivity
+import com.example.vmedvediev.redditapp.NetworkManager.BASE_URL
+import com.example.vmedvediev.redditapp.NetworkManager.initXmlRetrofit
 import com.example.vmedvediev.redditapp.R.string.post_url
 import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Feed
@@ -28,7 +30,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
-        private const val BASE_URL = "https://www.reddit.com/r/"
     }
 
     private lateinit var currentFeed: String
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        val call = initRetrofit().getFeed(currentFeed)
+        val call = initXmlRetrofit().getFeed(currentFeed)
 
         call.enqueue(object : Callback<Feed> {
 
@@ -113,15 +114,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-
-    private fun initRetrofit() : FeedAPI {
-        val retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(SimpleXmlConverterFactory.create())
-                .build()
-
-        return retrofit.create(FeedAPI::class.java)
     }
 
     private fun onPostClicked(post: Post) {
