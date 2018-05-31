@@ -11,6 +11,8 @@ import android.view.MenuItem
 import android.widget.Toast
 import android.widget.Toolbar
 import com.example.vmedvediev.redditapp.Account.LoginActivity
+import com.example.vmedvediev.redditapp.NetworkManager.BASE_URL
+import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.R.string.post_url
 import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Feed
@@ -28,7 +30,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
-        private const val BASE_URL = "https://www.reddit.com/r/"
     }
 
     private lateinit var currentFeed: String
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        val call = initRetrofit().getFeed(currentFeed)
+        val call = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed)
 
         call.enqueue(object : Callback<Feed> {
 
@@ -97,7 +98,8 @@ class MainActivity : AppCompatActivity() {
                             entry.author?.name,
                             entry.updated,
                             postContent[0],
-                            postContent[lastPosition]
+                            postContent[lastPosition],
+                            entry.id
                     ))
                 }
 
@@ -114,15 +116,6 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun initRetrofit() : FeedAPI {
-        val retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(SimpleXmlConverterFactory.create())
-                .build()
-
-        return retrofit.create(FeedAPI::class.java)
-    }
-
     private fun onPostClicked(post: Post) {
         val intent = Intent(this, CommentsActivity::class.java).apply {
             putExtra(getString(R.string.post_url), post.postUrl)
@@ -130,6 +123,7 @@ class MainActivity : AppCompatActivity() {
             putExtra(getString(R.string.post_title), post.title)
             putExtra(getString(R.string.post_author), post.author)
             putExtra(getString(R.string.post_updated), post.dateUpdated)
+            putExtra(getString(R.string.post_id), post.id)
         }
         startActivity(intent)
     }

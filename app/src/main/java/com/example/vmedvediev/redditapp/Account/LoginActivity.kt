@@ -7,23 +7,20 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.example.vmedvediev.redditapp.FeedAPI
+import com.example.vmedvediev.redditapp.NetworkManager.API_TYPE
+import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.model.LoginChecker
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class LoginActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "CommentsActivity"
-        private const val BASE_URL = "https://www.reddit.com/api/makeLoginRequest/"
-        private const val API_TYPE = "json"
-        private const val CONTENT_TYPE = "application/json"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,36 +36,36 @@ class LoginActivity : AppCompatActivity() {
             if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
                 loginRequestLoadingProgressBar?.visibility = View.VISIBLE
 
-                makeLoginRequest(username, password)
+                login(username, password)
             }
         }
     }
 
-    private fun makeLoginRequest(username: String, password: String) {
-        val headerMap = HashMap<String, String>()
-        headerMap["Content-Type"] = CONTENT_TYPE
-
-        val call = initRetrofit().signIn(headerMap, username, username, password, API_TYPE)
+    //This function should be named "login" because its name used in the request.
+    private fun login(username: String, password: String) {
+        val call = initRetrofit(GsonConverterFactory.create()).signIn(username, username, password, API_TYPE)
         call.enqueue(object : Callback<LoginChecker> {
             override fun onResponse(call: Call<LoginChecker>?, response: Response<LoginChecker>?) {
                 Log.d(TAG, "onResponse: Server Response: ${response.toString()}")
 
-                val data = response?.body()?.json?.data
-                val modhash = data?.modhash
-                val cookie = data?.cookie
+                response?.body()?.json?.data?.let {
+                    val (modhash, cookie) = it
 
-                handeSuccessfullLogin(modhash, username, cookie)
+                    Log.d(TAG, "$modhash $cookie")
+
+                    handleSuccessfullLogin(modhash, username, cookie)
+                }
             }
 
             override fun onFailure(call: Call<LoginChecker>?, t: Throwable?) {
                 loginRequestLoadingProgressBar?.visibility = View.GONE
-                Log.e(LoginActivity.TAG, "onFailure: Unable to makeLoginRequest: ${t?.message}")
+                Log.e(LoginActivity.TAG, "onFailure: Unable to login: ${t?.message}")
                 Toast.makeText(this@LoginActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    private fun handeSuccessfullLogin(modhash: String?, username: String, cookie: String?) {
+    private fun handleSuccessfullLogin(modhash: String?, username: String, cookie: String?) {
         if (!TextUtils.isEmpty(modhash)) {
             setSessionParams(username, modhash, cookie)
             loginRequestLoadingProgressBar?.visibility = View.GONE
@@ -77,15 +74,6 @@ class LoginActivity : AppCompatActivity() {
             // Navigate back to previous activity
             finish()
         }
-    }
-
-    private fun initRetrofit() : FeedAPI {
-        val retrofit = Retrofit.Builder()
-                .baseUrl(LoginActivity.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-        return retrofit.create(FeedAPI::class.java)
     }
 
     private fun setSessionParams(username: String, modhash: String?, cookie: String?) {
