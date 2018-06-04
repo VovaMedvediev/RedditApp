@@ -33,7 +33,7 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.2.0'
     implementation 'com.squareup.retrofit2:converter-simplexml:2.2.0'
-    implementation ('com.squareup.retrofit2:converter-gson:2.2.0')
+    implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
 
 
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
@@ -44,4 +44,15 @@ dependencies {
     implementation "org.jetbrains.anko:anko:0.10.5"
 
     implementation 'com.android.support:design:27.1.1'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5"
+    implementation "org.jetbrains.anko:anko-coroutines:0.10.5"
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:1.0.0'
+
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }

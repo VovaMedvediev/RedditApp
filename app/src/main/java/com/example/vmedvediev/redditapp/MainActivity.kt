@@ -20,6 +20,8 @@ import com.example.vmedvediev.redditapp.model.Post
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_activity_part.*
 import kotlinx.android.synthetic.main.main_activity_part.refreshPostsButton
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -71,12 +73,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        val call = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed)
-
-        call.enqueue(object : Callback<Feed> {
-
-            override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
-                val entrys = response?.body()?.entrys
+        launch(UI) {
+            try {
+                val entrys = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed).await().entrys
                 val posts = ArrayList<Post>()
 
                 entrys?.forEach { entry ->
@@ -103,17 +102,20 @@ class MainActivity : AppCompatActivity() {
                     ))
                 }
 
-                postsRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(this@MainActivity)
-                    adapter = PostsRecyclerViewAdapter(context, posts, {post: Post -> onPostClicked(post)})
-                }
-            }
+                updateUi(posts)
 
-            override fun onFailure(call: Call<Feed>?, t: Throwable?) {
-                Log.e(TAG, "onFailure: Unable to retrieve RSS: ${t?.message}")
-                Toast.makeText(this@MainActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Log.e(TAG, "${e.message}")
+                Toast.makeText(this@MainActivity, "Error occured! Input correct feed name.", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+    }
+
+    private fun updateUi(posts: ArrayList<Post>) {
+        postsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = PostsRecyclerViewAdapter(context, posts, {post: Post -> onPostClicked(post)})
+        }
     }
 
     private fun onPostClicked(post: Post) {

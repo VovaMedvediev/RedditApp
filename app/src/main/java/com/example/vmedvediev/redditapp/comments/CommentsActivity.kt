@@ -21,11 +21,12 @@ import com.example.vmedvediev.redditapp.XmlExtractor
 import com.example.vmedvediev.redditapp.model.Comment
 import com.example.vmedvediev.redditapp.model.CommentChecker
 import com.example.vmedvediev.redditapp.model.Entry
-import com.example.vmedvediev.redditapp.model.Feed
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.comment_input_layout.*
 import kotlinx.android.synthetic.main.comments_activity_header.*
 import kotlinx.android.synthetic.main.comments_in_comments_activity.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -85,19 +86,16 @@ class CommentsActivity : AppCompatActivity() {
     }
 
     private fun makeGetFeedRequest() {
-        val call = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed)
-        call.enqueue(object : Callback<Feed> {
-            override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
-                val entries = response?.body()?.entrys
+        launch(UI) {
+            try {
+                val entries = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed).await().entrys
                 prepareCommentsFromEntries(entries)
                 initRecycler()
-            }
-
-            override fun onFailure(call: Call<Feed>?, t: Throwable?) {
-                Log.e(TAG, "onFailure: Unable to retrieve RSS: ${t?.message}")
+            } catch (e: Exception) {
+                Log.e(TAG, "onFailure: Unable to retrieve RSS: ${e.message}")
                 Toast.makeText(this@CommentsActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
     }
 
     private fun prepareCommentsFromEntries(entries: List<Entry>?) {
@@ -191,25 +189,17 @@ class CommentsActivity : AppCompatActivity() {
             headerMap["User-Agent"] = username
             headerMap["X-Modhash"] = modhash
             headerMap["cookie"] = "reddit_session=$cookie"
-        
-            val call = initRetrofit(GsonConverterFactory.create()).submitComment(headerMap, "comment", postId, comment)
-            call.enqueue(object : Callback<CommentChecker> {
-                override fun onResponse(call: Call<CommentChecker>?, response: Response<CommentChecker>?) {
-                    Log.e(TAG, "onResponse: SERVER RESPONSE: ${response.toString()}")
-                    val success = response?.body()?.success
 
-                    if (success == "true") {
-                        handleSuccessPostComment()
-                    } else {
-                        handleUnsuccessPostComment()
-                    }
-                }
-
-                override fun onFailure(call: Call<CommentChecker>?, t: Throwable?) {
-                    Log.e(CommentsActivity.TAG, "onFailure: Unable to post comment: ${t?.message}")
-                    Toast.makeText(this@CommentsActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
-                }
-            })
+        launch(UI) {
+            try {
+                val success = initRetrofit(GsonConverterFactory.create())
+                        .submitComment(headerMap, "comment", postId, comment).await().success.toBoolean()
+                return@launch if (success) handleSuccessPostComment() else handleUnsuccessPostComment()
+            } catch (e: Exception) {
+                Log.e(TAG, "onFailure: Unable to retrieve RSS: ${e.message}")
+                Toast.makeText(this@CommentsActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun handleSuccessPostComment() {
