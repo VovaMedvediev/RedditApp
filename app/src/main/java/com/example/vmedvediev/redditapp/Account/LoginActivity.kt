@@ -47,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
     private fun login(username: String, password: String) {
         launch(UI) {
             try {
-                val data = initRetrofit(GsonConverterFactory.create())
+                initRetrofit(GsonConverterFactory.create())
                         .signIn(username, username, password, API_TYPE).await().json.data.let {
                     val (modhash, cookie) = it
                     handleSuccessfullLogin(modhash, username, cookie)
