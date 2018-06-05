@@ -19,7 +19,6 @@ import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.WebViewActivity
 import com.example.vmedvediev.redditapp.XmlExtractor
 import com.example.vmedvediev.redditapp.model.Comment
-import com.example.vmedvediev.redditapp.model.CommentChecker
 import com.example.vmedvediev.redditapp.model.Entry
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.comment_input_layout.*
@@ -27,9 +26,6 @@ import kotlinx.android.synthetic.main.comments_activity_header.*
 import kotlinx.android.synthetic.main.comments_in_comments_activity.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
@@ -85,8 +81,7 @@ class CommentsActivity : AppCompatActivity() {
         }
     }
 
-    private fun makeGetFeedRequest() {
-        launch(UI) {
+    private fun makeGetFeedRequest() = launch(UI) {
             try {
                 val entries = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed).await().entrys
                 prepareCommentsFromEntries(entries)
@@ -96,10 +91,8 @@ class CommentsActivity : AppCompatActivity() {
                 Toast.makeText(this@CommentsActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
         }
-    }
 
-    private fun prepareCommentsFromEntries(entries: List<Entry>?) {
-        entries?.forEach {
+    private fun prepareCommentsFromEntries(entries: List<Entry>?) = entries?.forEach {
             val xmlExtractor = XmlExtractor(it.content,"<div class=\"md\"><p>","</p>")
             val commentDetails = xmlExtractor.parseHtml()
 
@@ -119,7 +112,6 @@ class CommentsActivity : AppCompatActivity() {
                 ))
             }
         }
-    }
 
     private fun initRecycler() {
         commentsRecyclerView?.apply {
@@ -192,9 +184,9 @@ class CommentsActivity : AppCompatActivity() {
 
         launch(UI) {
             try {
-                val success = initRetrofit(GsonConverterFactory.create())
+                val isResponseSuccessful = initRetrofit(GsonConverterFactory.create())
                         .submitComment(headerMap, "comment", postId, comment).await().success.toBoolean()
-                return@launch if (success) handleSuccessPostComment() else handleUnsuccessPostComment()
+                return@launch if (isResponseSuccessful) handleSuccessPostComment() else handleUnsuccessPostComment()
             } catch (e: Exception) {
                 Log.e(TAG, "onFailure: Unable to retrieve RSS: ${e.message}")
                 Toast.makeText(this@CommentsActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
@@ -223,3 +215,6 @@ class CommentsActivity : AppCompatActivity() {
          }
      }
 }
+
+
+

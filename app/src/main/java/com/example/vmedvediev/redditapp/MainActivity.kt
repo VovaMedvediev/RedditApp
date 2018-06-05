@@ -7,25 +7,16 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.widget.Toast
-import android.widget.Toolbar
 import com.example.vmedvediev.redditapp.Account.LoginActivity
-import com.example.vmedvediev.redditapp.NetworkManager.BASE_URL
 import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
-import com.example.vmedvediev.redditapp.R.string.post_url
 import com.example.vmedvediev.redditapp.comments.CommentsActivity
-import com.example.vmedvediev.redditapp.model.Feed
 import com.example.vmedvediev.redditapp.model.Post
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_activity_part.*
 import kotlinx.android.synthetic.main.main_activity_part.refreshPostsButton
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
 class MainActivity : AppCompatActivity() {
@@ -72,13 +63,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun init() {
-        launch(UI) {
+    private fun init() = launch(UI) {
             try {
-                val entrys = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed).await().entrys
+                val entries = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed).await().entrys
                 val posts = ArrayList<Post>()
 
-                entrys?.forEach { entry ->
+                entries?.forEach { entry ->
                     val extractXml1 = XmlExtractor(entry.content, "<a href=")
                     val postContent = extractXml1.parseHtml()
 
@@ -109,10 +99,9 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "Error occured! Input correct feed name.", Toast.LENGTH_SHORT).show()
             }
         }
-    }
 
     private fun updateUi(posts: ArrayList<Post>) {
-        postsRecyclerView.apply {
+        postsRecyclerView?.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = PostsRecyclerViewAdapter(context, posts, {post: Post -> onPostClicked(post)})
         }

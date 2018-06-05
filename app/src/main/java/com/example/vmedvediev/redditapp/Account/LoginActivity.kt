@@ -44,8 +44,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     //This function should be named "login" because its name used in the request.
-    private fun login(username: String, password: String) {
-        launch(UI) {
+    private fun login(username: String, password: String) = launch(UI) {
             try {
                 initRetrofit(GsonConverterFactory.create())
                         .signIn(username, username, password, API_TYPE).await().json.data.let {
@@ -58,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this@LoginActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
         }
-    }
+
 
     private fun handleSuccessfullLogin(modhash: String?, username: String, cookie: String?) {
         if (!TextUtils.isEmpty(modhash)) {
