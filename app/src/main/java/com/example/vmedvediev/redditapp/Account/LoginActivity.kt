@@ -12,6 +12,8 @@ import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.model.LoginChecker
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,28 +44,20 @@ class LoginActivity : AppCompatActivity() {
     }
 
     //This function should be named "login" because its name used in the request.
-    private fun login(username: String, password: String) {
-        val call = initRetrofit(GsonConverterFactory.create()).signIn(username, username, password, API_TYPE)
-        call.enqueue(object : Callback<LoginChecker> {
-            override fun onResponse(call: Call<LoginChecker>?, response: Response<LoginChecker>?) {
-                Log.d(TAG, "onResponse: Server Response: ${response.toString()}")
-
-                response?.body()?.json?.data?.let {
+    private fun login(username: String, password: String) = launch(UI) {
+            try {
+                initRetrofit(GsonConverterFactory.create())
+                        .signIn(username, username, password, API_TYPE).await().json.data.let {
                     val (modhash, cookie) = it
-
-                    Log.d(TAG, "$modhash $cookie")
-
                     handleSuccessfullLogin(modhash, username, cookie)
                 }
-            }
 
-            override fun onFailure(call: Call<LoginChecker>?, t: Throwable?) {
-                loginRequestLoadingProgressBar?.visibility = View.GONE
-                Log.e(LoginActivity.TAG, "onFailure: Unable to login: ${t?.message}")
+            } catch (e: Exception) {
+                Log.e(LoginActivity.TAG, "onFailure: Unable to login: ${e.message}")
                 Toast.makeText(this@LoginActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
             }
-        })
-    }
+        }
+
 
     private fun handleSuccessfullLogin(modhash: String?, username: String, cookie: String?) {
         if (!TextUtils.isEmpty(modhash)) {
