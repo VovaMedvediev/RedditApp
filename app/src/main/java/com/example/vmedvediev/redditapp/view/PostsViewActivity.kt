@@ -9,15 +9,15 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import com.example.vmedvediev.redditapp.NavigationManager
-import com.example.vmedvediev.redditapp.PostsRecyclerViewAdapter
 import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Post
 import com.example.vmedvediev.redditapp.presenter.PostsPresenter
+import com.example.vmedvediev.redditapp.view.adapters.PostsRecyclerViewAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_activity_part.*
 
-class PostsViewActivity : AppCompatActivity(), PostsPresenter.PostsView {
+class PostsViewActivity : AppCompatActivity(), PostsPresenter.View {
 
     private lateinit var presenter: PostsPresenter
 
@@ -41,7 +41,6 @@ class PostsViewActivity : AppCompatActivity(), PostsPresenter.PostsView {
 
     private fun setupToolbar() {
         setSupportActionBar(mainToolBar)
-
         mainToolBar.setOnMenuItemClickListener {
             startActivity(NavigationManager.changeScreen(this, it.itemId))
             false
@@ -67,12 +66,12 @@ class PostsViewActivity : AppCompatActivity(), PostsPresenter.PostsView {
     override fun showPosts(posts: ArrayList<Post>) {
             postsRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(this@PostsViewActivity)
-                adapter = PostsRecyclerViewAdapter(context, posts, {post: Post -> onPostClicked(post)})
+                adapter = PostsRecyclerViewAdapter(context, posts, { post: Post -> onPostClicked(post) })
             }
     }
 
     private fun onPostClicked(post: Post) {
-        val intent = Intent(this, CommentsActivity::class.java).apply {
+        val intent = Intent(this, CommentsViewActivity::class.java).apply {
             putExtra(getString(R.string.post_url), post.postUrl)
             putExtra(getString(R.string.post_thumbnail), post.thumnailUrl)
             putExtra(getString(R.string.post_title), post.title)

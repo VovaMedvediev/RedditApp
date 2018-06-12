@@ -18,8 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".comments.CommentsActivity" />
-        <activity android:name=".WebViewActivity" />
+        <activity android:name=".view.CommentsViewActivity" />
+        <activity android:name=".view.WebViewActivity" />
         <activity android:name=".view.LoginViewActivity" />
     </application>
 

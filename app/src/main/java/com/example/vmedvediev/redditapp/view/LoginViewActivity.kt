@@ -6,11 +6,10 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View.*
 import android.widget.Toast
 import com.example.vmedvediev.redditapp.R
-import com.example.vmedvediev.redditapp.model.Post
 import com.example.vmedvediev.redditapp.presenter.LoginPresenter
 import kotlinx.android.synthetic.main.activity_login.*
 
-class LoginViewActivity : AppCompatActivity(), LoginPresenter.LoginView {
+class LoginViewActivity : AppCompatActivity(), LoginPresenter.View {
 
     private lateinit var presenter: LoginPresenter
 

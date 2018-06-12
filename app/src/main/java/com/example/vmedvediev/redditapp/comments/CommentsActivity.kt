@@ -10,16 +10,16 @@ import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.Toast
-import com.example.vmedvediev.redditapp.Account.LoginActivity
 import com.example.vmedvediev.redditapp.ImageLoaderManager.setupImageLoader
 import com.example.vmedvediev.redditapp.ImageLoaderManager.showImage
 import com.example.vmedvediev.redditapp.model.NetworkManager.BASE_URL
 import com.example.vmedvediev.redditapp.model.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.R
-import com.example.vmedvediev.redditapp.WebViewActivity
-import com.example.vmedvediev.redditapp.XmlExtractor
+import com.example.vmedvediev.redditapp.view.WebViewActivity
+import com.example.vmedvediev.redditapp.model.XmlExtractor
 import com.example.vmedvediev.redditapp.model.Comment
 import com.example.vmedvediev.redditapp.model.Entry
+import com.example.vmedvediev.redditapp.view.adapters.CommentsRecyclerViewAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.comment_input_layout.*
 import kotlinx.android.synthetic.main.comments_activity_header.*
@@ -27,7 +27,6 @@ import kotlinx.android.synthetic.main.comments_in_comments_activity.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
 class CommentsActivity : AppCompatActivity() {
 
@@ -73,8 +72,8 @@ class CommentsActivity : AppCompatActivity() {
         mainToolBar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.navigationLogin -> {
-                    val intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
+                    //val intent = Intent(this, LoginActivity::class.java)
+                    //startActivity(intent)
                 }
             }
             false
@@ -93,7 +92,7 @@ class CommentsActivity : AppCompatActivity() {
         }
 
     private fun prepareCommentsFromEntries(entries: List<Entry>?) = entries?.forEach {
-            val xmlExtractor = XmlExtractor(it.content,"<div class=\"md\"><p>","</p>")
+            val xmlExtractor = XmlExtractor(it.content, "<div class=\"md\"><p>", "</p>")
             val commentDetails = xmlExtractor.parseHtml()
 
             try {
@@ -116,7 +115,7 @@ class CommentsActivity : AppCompatActivity() {
     private fun initRecycler() {
         commentsRecyclerView?.apply {
             layoutManager = LinearLayoutManager(this@CommentsActivity)
-            adapter = CommentsRecyclerViewAdapter(commentsList, {comment: Comment -> onCommentClicked(comment)})
+            adapter = CommentsRecyclerViewAdapter(commentsList, { comment: Comment -> onCommentClicked(comment) })
         }
 
         commentsLoadingProgressBar?.visibility = View.GONE

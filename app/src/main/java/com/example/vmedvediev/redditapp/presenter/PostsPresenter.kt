@@ -1,7 +1,7 @@
 package com.example.vmedvediev.redditapp.presenter
 
 import android.util.Log
-import com.example.vmedvediev.redditapp.XmlExtractor
+import com.example.vmedvediev.redditapp.model.XmlExtractor
 import com.example.vmedvediev.redditapp.model.NetworkManager
 import com.example.vmedvediev.redditapp.model.Post
 import kotlinx.coroutines.experimental.android.UI
@@ -9,14 +9,13 @@ import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.bg
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
-class PostsPresenter(private val view: PostsView) {
+class PostsPresenter(private val view: View) {
 
     companion object {
         private const val TAG = "PostsPresenter"
     }
 
-    fun getPosts(postName: String) {
-        launch(UI) {
+    fun getPosts(postName: String) = launch(UI) {
             try {
                 view.showLoading()
 
@@ -60,9 +59,9 @@ class PostsPresenter(private val view: PostsView) {
                 view.showError()
             }
         }
-    }
 
-    interface PostsView {
+
+    interface View {
 
         fun showLoading()
 
