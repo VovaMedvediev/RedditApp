@@ -10,7 +10,6 @@ import android.view.View.VISIBLE
 import android.widget.Toast
 import com.example.vmedvediev.redditapp.NavigationManager
 import com.example.vmedvediev.redditapp.R
-import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Post
 import com.example.vmedvediev.redditapp.presenter.PostsPresenter
 import com.example.vmedvediev.redditapp.view.adapters.PostsRecyclerViewAdapter

@@ -1,8 +1,6 @@
 package com.example.vmedvediev.redditapp.presenter
 
 import android.util.Log
-import android.widget.Toast
-import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.*
 import com.example.vmedvediev.redditapp.model.NetworkManager.initRetrofit
 import kotlinx.coroutines.experimental.android.UI
