@@ -24,9 +24,8 @@ class PostsPresenter(private val view: View) {
                     val feed = NetworkManager
                             .initRetrofit(SimpleXmlConverterFactory.create()).getFeed(postName).execute().body()
                     val posts = ArrayList<Post>()
-                    preparePostsFromFeed(feed, posts)
 
-                    return@bg posts
+                    return@bg preparePostsFromFeed(feed, posts)
                 }
 
                 view.showPosts(data.await())
@@ -39,7 +38,7 @@ class PostsPresenter(private val view: View) {
             }
         }
 
-    private fun preparePostsFromFeed(feed: Feed?, posts: ArrayList<Post>) {
+    private fun preparePostsFromFeed(feed: Feed?, posts: ArrayList<Post>) : ArrayList<Post> {
         feed?.entrys?.forEach { entry ->
             val extractXml1 = XmlExtractor(entry.content, "<a href=")
             val postContent = extractXml1.parseHtml()
@@ -63,6 +62,7 @@ class PostsPresenter(private val view: View) {
                     entry.id
             ))
         }
+        return posts
     }
 
 
