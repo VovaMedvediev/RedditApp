@@ -1,4 +1,4 @@
-package com.example.vmedvediev.redditapp
+package com.example.vmedvediev.redditapp.model
 
 import android.util.Log
 

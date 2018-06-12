@@ -1,4 +1,4 @@
-package com.example.vmedvediev.redditapp.comments
+package com.example.vmedvediev.redditapp.view.adapters
 
 import android.support.v7.widget.RecyclerView
 import android.view.View

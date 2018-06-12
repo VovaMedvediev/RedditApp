@@ -1,8 +1,5 @@
-package com.example.vmedvediev.redditapp
+package com.example.vmedvediev.redditapp.model
 
-import com.example.vmedvediev.redditapp.model.CommentChecker
-import com.example.vmedvediev.redditapp.model.Feed
-import com.example.vmedvediev.redditapp.model.LoginChecker
 import kotlinx.coroutines.experimental.Deferred
 import retrofit2.Call
 import retrofit2.http.*
@@ -10,7 +7,7 @@ import retrofit2.http.*
 interface FeedAPI {
     
     @GET("r/{feedName}/.rss")
-    fun getFeed(@Path("feedName") feedName: String) : Deferred<Feed>
+    fun getFeed(@Path("feedName") feedName: String) : Call<Feed>
 
     @POST("api/login/{user}")
     @Headers("Content-Type: application/json")

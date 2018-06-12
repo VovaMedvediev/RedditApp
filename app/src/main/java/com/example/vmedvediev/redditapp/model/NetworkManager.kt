@@ -1,4 +1,4 @@
-package com.example.vmedvediev.redditapp
+package com.example.vmedvediev.redditapp.model
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.CoroutineCallAdapterFactory
 import retrofit2.Converter
