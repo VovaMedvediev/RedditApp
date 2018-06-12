@@ -1,6 +1,7 @@
 package com.example.vmedvediev.redditapp.presenter
 
 import android.util.Log
+import com.example.vmedvediev.redditapp.model.Feed
 import com.example.vmedvediev.redditapp.model.XmlExtractor
 import com.example.vmedvediev.redditapp.model.NetworkManager
 import com.example.vmedvediev.redditapp.model.Post
@@ -23,30 +24,8 @@ class PostsPresenter(private val view: View) {
                     val feed = NetworkManager
                             .initRetrofit(SimpleXmlConverterFactory.create()).getFeed(postName).execute().body()
                     val posts = ArrayList<Post>()
+                    preparePostsFromFeed(feed, posts)
 
-                    feed?.entrys?.forEach { entry ->
-                        val extractXml1 = XmlExtractor(entry.content, "<a href=")
-                        val postContent = extractXml1.parseHtml()
-
-                        val extractXml2 = XmlExtractor(entry.content, "<img src=")
-
-                        try {
-                            postContent.add(extractXml2.parseHtml()[0])
-                        } catch (e: IndexOutOfBoundsException) {
-                            postContent.add("NULL")
-                            Log.e(TAG, "onResponse: IndexOutOfBoundsException(thumbnail): ${e.message}")
-                        }
-
-                        val lastPosition = postContent.size - 1
-                        posts.add(Post(
-                                entry.title,
-                                entry.author?.name,
-                                entry.updated,
-                                postContent[0],
-                                postContent[lastPosition],
-                                entry.id
-                        ))
-                    }
                     return@bg posts
                 }
 
@@ -59,6 +38,32 @@ class PostsPresenter(private val view: View) {
                 view.showError()
             }
         }
+
+    private fun preparePostsFromFeed(feed: Feed?, posts: ArrayList<Post>) {
+        feed?.entrys?.forEach { entry ->
+            val extractXml1 = XmlExtractor(entry.content, "<a href=")
+            val postContent = extractXml1.parseHtml()
+
+            val extractXml2 = XmlExtractor(entry.content, "<img src=")
+
+            try {
+                postContent.add(extractXml2.parseHtml()[0])
+            } catch (e: IndexOutOfBoundsException) {
+                postContent.add("NULL")
+                Log.e(TAG, "onResponse: IndexOutOfBoundsException(thumbnail): ${e.message}")
+            }
+
+            val lastPosition = postContent.size - 1
+            posts.add(Post(
+                    entry.title,
+                    entry.author?.name,
+                    entry.updated,
+                    postContent[0],
+                    postContent[lastPosition],
+                    entry.id
+            ))
+        }
+    }
 
 
     interface View {

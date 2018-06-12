@@ -18,14 +18,15 @@ import kotlinx.android.synthetic.main.main_activity_part.*
 
 class PostsViewActivity : AppCompatActivity(), PostsPresenter.View {
 
-    private lateinit var presenter: PostsPresenter
+    private val presenter: PostsPresenter by lazy {
+        PostsPresenter(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setupToolbar()
-        initPresenter()
         showPosts(ArrayList())
 
         refreshPostsButton.setOnClickListener {
@@ -56,10 +57,6 @@ class PostsViewActivity : AppCompatActivity(), PostsPresenter.View {
 
     override fun hideLoading() {
         loadingProgressBar?.visibility = GONE
-    }
-
-    private fun initPresenter() {
-        presenter = PostsPresenter(this)
     }
 
     override fun showPosts(posts: ArrayList<Post>) {

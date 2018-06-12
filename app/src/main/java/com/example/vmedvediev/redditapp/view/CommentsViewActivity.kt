@@ -23,7 +23,9 @@ import kotlinx.android.synthetic.main.comments_in_comments_activity.*
 
 class CommentsViewActivity : AppCompatActivity(), CommentsPresenter.View {
 
-    private lateinit var presenter: CommentsPresenter
+    private val presenter: CommentsPresenter by lazy {
+        CommentsPresenter(this)
+    }
     private lateinit var postUrl: String
     private lateinit var postId: String
     private lateinit var modhash: String
@@ -38,7 +40,6 @@ class CommentsViewActivity : AppCompatActivity(), CommentsPresenter.View {
         getSessionParams()
         ImageLoaderManager.setupImageLoader(this)
         initPost()
-        initPresenter()
         presenter.makeGetFeedRequest(postUrl)
 
         postReply()
@@ -63,27 +64,23 @@ class CommentsViewActivity : AppCompatActivity(), CommentsPresenter.View {
         }
     }
 
-    private fun initPresenter() {
-        presenter = CommentsPresenter(this)
-    }
-
     private fun getSessionParams() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        preferences.let {
-            username = it.getString(getString(R.string.SessionUsername), "")
-            modhash = it.getString(getString(R.string.SessionModhash), "")
-            cookie = it.getString(getString(R.string.SessionCookie), "")
+        preferences.apply {
+            username = this.getString(getString(R.string.SessionUsername), "")
+            modhash = this.getString(getString(R.string.SessionModhash), "")
+            cookie = this.getString(getString(R.string.SessionCookie), "")
         }
     }
 
     private fun initPost() {
-        intent.let {
-            postUrl = it.getStringExtra(getString(R.string.post_url))
-            postId = it.getStringExtra(getString(R.string.post_id))
-            postTitleTextView?.text = it.getStringExtra(getString(R.string.post_title))
-            postAuthorTextView?.text = it.getStringExtra(getString(R.string.post_author))
-            postUpdatedTextView?.text = it.getStringExtra(getString(R.string.post_updated))
-            ImageLoaderManager.showImage(this, it.getStringExtra(getString(R.string.post_thumbnail)), postThumbnailImageView, postLoadingProgressBar)
+        intent.apply {
+            postUrl = this.getStringExtra(getString(R.string.post_url))
+            postId = this.getStringExtra(getString(R.string.post_id))
+            postTitleTextView?.text = this.getStringExtra(getString(R.string.post_title))
+            postAuthorTextView?.text = this.getStringExtra(getString(R.string.post_author))
+            postUpdatedTextView?.text = this.getStringExtra(getString(R.string.post_updated))
+            ImageLoaderManager.showImage(this@CommentsViewActivity, this.getStringExtra(getString(R.string.post_thumbnail)), postThumbnailImageView, postLoadingProgressBar)
         }
     }
 

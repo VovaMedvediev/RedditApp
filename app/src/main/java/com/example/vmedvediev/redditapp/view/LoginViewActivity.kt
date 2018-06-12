@@ -11,12 +11,13 @@ import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginViewActivity : AppCompatActivity(), LoginPresenter.View {
 
-    private lateinit var presenter: LoginPresenter
+    private val presenter: LoginPresenter by lazy {
+        LoginPresenter(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        initPresenter()
 
         loginButton.setOnClickListener {
             val username = usernameEditText.text.toString()
@@ -24,10 +25,6 @@ class LoginViewActivity : AppCompatActivity(), LoginPresenter.View {
             presenter.login(username, password)
             }
         }
-
-    private fun initPresenter() {
-        presenter = LoginPresenter(this)
-    }
 
     private fun setSessionParams(username: String, modhash: String?, cookie: String?) {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
