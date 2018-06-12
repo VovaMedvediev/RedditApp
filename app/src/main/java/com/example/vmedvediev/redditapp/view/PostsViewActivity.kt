@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
+import com.example.vmedvediev.redditapp.NavigationManager
 import com.example.vmedvediev.redditapp.PostsRecyclerViewAdapter
 import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.comments.CommentsActivity
@@ -16,7 +17,7 @@ import com.example.vmedvediev.redditapp.presenter.PostsPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_activity_part.*
 
-class PostsViewActivity : AppCompatActivity(), View {
+class PostsViewActivity : AppCompatActivity(), PostsPresenter.PostsView {
 
     private lateinit var presenter: PostsPresenter
 

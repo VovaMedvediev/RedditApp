@@ -4,13 +4,12 @@ import android.util.Log
 import com.example.vmedvediev.redditapp.XmlExtractor
 import com.example.vmedvediev.redditapp.model.NetworkManager
 import com.example.vmedvediev.redditapp.model.Post
-import com.example.vmedvediev.redditapp.view.View
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.bg
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
-class PostsPresenter(private val view: View) {
+class PostsPresenter(private val view: PostsView) {
 
     companion object {
         private const val TAG = "PostsPresenter"
@@ -61,5 +60,16 @@ class PostsPresenter(private val view: View) {
                 view.showError()
             }
         }
+    }
+
+    interface PostsView {
+
+        fun showLoading()
+
+        fun hideLoading()
+
+        fun showPosts(posts: ArrayList<Post>)
+
+        fun showError()
     }
 }

@@ -20,7 +20,7 @@
         </activity>
         <activity android:name=".comments.CommentsActivity" />
         <activity android:name=".WebViewActivity" />
-        <activity android:name=".Account.LoginActivity" />
+        <activity android:name=".view.LoginViewActivity" />
     </application>
 
 </manifest>
