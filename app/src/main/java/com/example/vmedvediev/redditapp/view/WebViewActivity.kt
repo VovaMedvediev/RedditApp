@@ -1,10 +1,11 @@
-package com.example.vmedvediev.redditapp
+package com.example.vmedvediev.redditapp.view
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.example.vmedvediev.redditapp.R
 import kotlinx.android.synthetic.main.webview_activity.*
 
 class WebViewActivity : AppCompatActivity() {

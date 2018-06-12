@@ -1,16 +1,15 @@
-package com.example.vmedvediev.redditapp
+package com.example.vmedvediev.redditapp.view.adapters
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
-import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.example.vmedvediev.redditapp.comments.CommentsActivity
+import com.example.vmedvediev.redditapp.R
+import com.example.vmedvediev.redditapp.inflate
 import com.example.vmedvediev.redditapp.model.Post
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache
 import com.nostra13.universalimageloader.core.DisplayImageOptions
