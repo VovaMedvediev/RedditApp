@@ -1,6 +1,5 @@
-package com.example.vmedvediev.redditapp
+package com.example.vmedvediev.redditapp.model
 
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.CoroutineCallAdapterFactory
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,7 +16,6 @@ object NetworkManager {
         val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(converterFactory)
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .build()
         return retrofit.create(FeedAPI::class.java)
     }
