@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import com.example.vmedvediev.redditapp.Account.LoginActivity
-import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
+import com.example.vmedvediev.redditapp.model.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.comments.CommentsActivity
 import com.example.vmedvediev.redditapp.model.Post
 import kotlinx.android.synthetic.main.activity_main.*
@@ -64,40 +64,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() = launch(UI) {
-            try {
-                val entries = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed).await().entrys
-                val posts = ArrayList<Post>()
-
-                entries?.forEach { entry ->
-                    val extractXml1 = XmlExtractor(entry.content, "<a href=")
-                    val postContent = extractXml1.parseHtml()
-
-                    val extractXml2 = XmlExtractor(entry.content, "<img src=")
-
-                    try {
-                        postContent.add(extractXml2.parseHtml()[0])
-                    } catch (e: IndexOutOfBoundsException) {
-                        postContent.add("NULL")
-                        Log.e(TAG, "onResponse: IndexOutOfBoundsException(thumbnail): ${e.message}")
-                    }
-
-                    val lastPosition = postContent.size - 1
-                    posts.add(Post(
-                            entry.title,
-                            entry.author?.name,
-                            entry.updated,
-                            postContent[0],
-                            postContent[lastPosition],
-                            entry.id
-                    ))
-                }
-
-                updateUi(posts)
-
-            } catch (e: Exception) {
-                Log.e(TAG, "${e.message}")
-                Toast.makeText(this@MainActivity, "Error occured! Input correct feed name.", Toast.LENGTH_SHORT).show()
-            }
+//            try {
+//                val entries = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed).await().entrys
+//                val posts = ArrayList<Post>()
+//
+//                entries?.forEach { entry ->
+//                    val extractXml1 = XmlExtractor(entry.content, "<a href=")
+//                    val postContent = extractXml1.parseHtml()
+//
+//                    val extractXml2 = XmlExtractor(entry.content, "<img src=")
+//
+//                    try {
+//                        postContent.add(extractXml2.parseHtml()[0])
+//                    } catch (e: IndexOutOfBoundsException) {
+//                        postContent.add("NULL")
+//                        Log.e(TAG, "onResponse: IndexOutOfBoundsException(thumbnail): ${e.message}")
+//                    }
+//
+//                    val lastPosition = postContent.size - 1
+//                    posts.add(Post(
+//                            entry.title,
+//                            entry.author?.name,
+//                            entry.updated,
+//                            postContent[0],
+//                            postContent[lastPosition],
+//                            entry.id
+//                    ))
+//                }
+//
+//                updateUi(posts)
+//
+//            } catch (e: Exception) {
+//                Log.e(TAG, "${e.message}")
+//                Toast.makeText(this@MainActivity, "Error occured! Input correct feed name.", Toast.LENGTH_SHORT).show()
+//            }
         }
 
     private fun updateUi(posts: ArrayList<Post>) {

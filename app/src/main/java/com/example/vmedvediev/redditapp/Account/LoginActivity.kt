@@ -7,16 +7,12 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.example.vmedvediev.redditapp.NetworkManager.API_TYPE
-import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
+import com.example.vmedvediev.redditapp.model.NetworkManager.API_TYPE
+import com.example.vmedvediev.redditapp.model.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.R
-import com.example.vmedvediev.redditapp.model.LoginChecker
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
 
 class LoginActivity : AppCompatActivity() {

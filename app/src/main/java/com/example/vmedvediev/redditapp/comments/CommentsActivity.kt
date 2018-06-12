@@ -13,8 +13,8 @@ import android.widget.Toast
 import com.example.vmedvediev.redditapp.Account.LoginActivity
 import com.example.vmedvediev.redditapp.ImageLoaderManager.setupImageLoader
 import com.example.vmedvediev.redditapp.ImageLoaderManager.showImage
-import com.example.vmedvediev.redditapp.NetworkManager.BASE_URL
-import com.example.vmedvediev.redditapp.NetworkManager.initRetrofit
+import com.example.vmedvediev.redditapp.model.NetworkManager.BASE_URL
+import com.example.vmedvediev.redditapp.model.NetworkManager.initRetrofit
 import com.example.vmedvediev.redditapp.R
 import com.example.vmedvediev.redditapp.WebViewActivity
 import com.example.vmedvediev.redditapp.XmlExtractor
@@ -82,14 +82,14 @@ class CommentsActivity : AppCompatActivity() {
     }
 
     private fun makeGetFeedRequest() = launch(UI) {
-            try {
-                val entries = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed).await().entrys
-                prepareCommentsFromEntries(entries)
-                initRecycler()
-            } catch (e: Exception) {
-                Log.e(TAG, "onFailure: Unable to retrieve RSS: ${e.message}")
-                Toast.makeText(this@CommentsActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
-            }
+//            try {
+//                val entries = initRetrofit(SimpleXmlConverterFactory.create()).getFeed(currentFeed).await().entrys
+//                prepareCommentsFromEntries(entries)
+//                initRecycler()
+//            } catch (e: Exception) {
+//                Log.e(TAG, "onFailure: Unable to retrieve RSS: ${e.message}")
+//                Toast.makeText(this@CommentsActivity, "An Error Occured!", Toast.LENGTH_SHORT).show()
+//            }
         }
 
     private fun prepareCommentsFromEntries(entries: List<Entry>?) = entries?.forEach {
