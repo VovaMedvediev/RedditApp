@@ -15,7 +15,7 @@ interface FeedAPI {
                @Path("user") username: String,
                @Query("user") user: String,
                @Query("passwd") password: String,
-               @Query("api_type") type: String) : Deferred<LoginChecker>
+               @Query("api_type") type: String) : Call<LoginChecker>
 
     @POST("api/{comment}")
     fun submitComment(@HeaderMap headers: Map<String, String>,
