@@ -1,42 +1,41 @@
 package com.example.vmedvediev.redditapp.presenter
 
 import android.util.Log
+import com.example.vmedvediev.redditapp.CoroutineContextProvider
 import com.example.vmedvediev.redditapp.model.Feed
 import com.example.vmedvediev.redditapp.model.XmlExtractor
 import com.example.vmedvediev.redditapp.model.NetworkManager
 import com.example.vmedvediev.redditapp.model.Post
-import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.coroutines.experimental.bg
+import kotlinx.coroutines.experimental.withContext
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
-class PostsPresenter(private val view: View) {
+class PostsPresenter(private val view: View, private val contextPool: CoroutineContextProvider = CoroutineContextProvider()) {
 
     companion object {
         private const val TAG = "PostsPresenter"
     }
 
-    fun getPosts(postName: String) = launch(UI) {
+    fun getPosts(postName: String) : ArrayList<Post> {
+        val posts = ArrayList<Post>()
+        launch(contextPool.Main) {
             try {
                 view.showLoading()
 
-                val data = bg {
+                val data = withContext(contextPool.IO) {
                     val feed = NetworkManager
                             .initRetrofit(SimpleXmlConverterFactory.create()).getFeed(postName).execute().body()
-                    val posts = ArrayList<Post>()
-
-                    return@bg preparePostsFromFeed(feed, posts)
+                    return@withContext preparePostsFromFeed(feed, posts)
                 }
-
-                view.showPosts(data.await())
+                view.showPosts(data)
                 view.hideLoading()
-
             } catch (e: Exception) {
-                Log.e(TAG, "${e.message}")
                 view.hideLoading()
                 view.showError()
             }
         }
+        return posts
+    }
 
     private fun preparePostsFromFeed(feed: Feed?, posts: ArrayList<Post>) : ArrayList<Post> {
         feed?.entrys?.forEach { entry ->
